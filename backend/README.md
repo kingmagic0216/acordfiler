@@ -1,0 +1,125 @@
+# ACORD Intake Platform Backend
+
+## Environment Variables
+
+Create a `.env` file in the backend directory with the following variables:
+
+```env
+# Server Configuration
+NODE_ENV=development
+PORT=3001
+HOST=localhost
+
+# Database Configuration
+DATABASE_URL="postgresql://username:password@localhost:5432/acord_intake_db"
+DATABASE_URL_TEST="postgresql://username:password@localhost:5432/acord_intake_test_db"
+
+# JWT Configuration
+JWT_SECRET=your-super-secret-jwt-key-here
+JWT_EXPIRES_IN=7d
+JWT_REFRESH_SECRET=your-super-secret-refresh-key-here
+JWT_REFRESH_EXPIRES_IN=30d
+
+# Redis Configuration
+REDIS_URL=redis://localhost:6379
+REDIS_PASSWORD=
+
+# Email Configuration
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=587
+SMTP_USER=your-email@gmail.com
+SMTP_PASS=your-app-password
+FROM_EMAIL=noreply@acordintake.com
+FROM_NAME=ACORD Intake Platform
+
+# File Upload Configuration
+UPLOAD_MAX_SIZE=10485760
+UPLOAD_ALLOWED_TYPES=pdf,doc,docx,jpg,jpeg,png
+UPLOAD_PATH=./uploads
+
+# AWS S3 Configuration (Optional)
+AWS_ACCESS_KEY_ID=your-aws-access-key
+AWS_SECRET_ACCESS_KEY=your-aws-secret-key
+AWS_REGION=us-east-1
+AWS_S3_BUCKET=acord-intake-documents
+
+# Security Configuration
+BCRYPT_ROUNDS=12
+RATE_LIMIT_WINDOW_MS=900000
+RATE_LIMIT_MAX_REQUESTS=100
+
+# E-Signature Configuration
+DOCUSIGN_CLIENT_ID=your-docusign-client-id
+DOCUSIGN_CLIENT_SECRET=your-docusign-client-secret
+DOCUSIGN_REDIRECT_URI=http://localhost:3001/auth/docusign/callback
+
+# Monitoring Configuration
+LOG_LEVEL=info
+LOG_FILE=./logs/app.log
+
+# CORS Configuration
+CORS_ORIGIN=http://localhost:5173
+CORS_CREDENTIALS=true
+```
+
+## Database Setup
+
+1. Install PostgreSQL
+2. Create database:
+```sql
+CREATE DATABASE acord_intake_db;
+CREATE DATABASE acord_intake_test_db;
+```
+
+3. Run migrations:
+```bash
+npm run db:migrate
+```
+
+4. Seed database:
+```bash
+npm run db:seed
+```
+
+## Development
+
+1. Install dependencies:
+```bash
+npm install
+```
+
+2. Start development server:
+```bash
+npm run dev
+```
+
+3. API will be available at: http://localhost:3001
+
+## Testing
+
+```bash
+# Run tests
+npm test
+
+# Run tests with coverage
+npm run test:coverage
+
+# Run tests in watch mode
+npm run test:watch
+```
+
+## Production Deployment
+
+1. Build the application:
+```bash
+npm run build
+```
+
+2. Start production server:
+```bash
+npm start
+```
+
+## API Documentation
+
+API documentation is available at: http://localhost:3001/api-docs

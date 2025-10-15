@@ -1,0 +1,345 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// User Management
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  firstName String
+  lastName  String
+  role      UserRole @default(CUSTOMER)
+  status    UserStatus @default(ACTIVE)
+  avatar    String?
+  phone     String?
+  timezone  String @default("UTC")
+  
+  // Agency/Tenant
+  agencyId  String?
+  agency    Agency? @relation(fields: [agencyId], references: [id])
+  
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  lastLoginAt DateTime?
+  
+  // Relations
+  submissions     Submission[]
+  auditLogs       AuditLog[]
+  notifications   Notification[]
+  sessions        UserSession[]
+  
+  @@map("users")
+}
+
+model Agency {
+  id          String @id @default(cuid())
+  name        String
+  domain      String @unique
+  logo        String?
+  primaryColor String @default("#1e3a8a")
+  accentColor String @default("#3b82f6")
+  
+  // Settings
+  settings    Json?
+  
+  // Timestamps
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  // Relations
+  users       User[]
+  submissions Submission[]
+  fieldMappings FieldMapping[]
+  
+  @@map("agencies")
+}
+
+// Authentication
+model UserSession {
+  id        String   @id @default(cuid())
+  userId    String
+  token     String   @unique
+  refreshToken String @unique
+  expiresAt DateTime
+  ipAddress String?
+  userAgent String?
+  
+  // Relations
+  user      User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@map("user_sessions")
+}
+
+// Form Submissions
+model Submission {
+  id          String @id @default(cuid())
+  submissionId String @unique // Human-readable ID like SUB-001
+  
+  // Business Information
+  businessName     String
+  federalId        String
+  businessType     String
+  yearsInBusiness  Int
+  businessDescription String
+  website          String?
+  
+  // Contact Information
+  contactName      String
+  email            String
+  phone            String
+  address          String
+  city             String
+  state            String
+  zipCode          String
+  
+  // Coverage Information
+  coverageTypes    String[] // Array of coverage type IDs
+  coverageResponses Json?   // Dynamic coverage-specific responses
+  
+  // Client Type
+  clientType       ClientType @default(BUSINESS)
+  
+  // Status and Priority
+  status          SubmissionStatus @default(NEW)
+  priority        Priority @default(MEDIUM)
+  
+  // Assignment
+  brokerId        String?
+  broker          User? @relation(fields: [brokerId], references: [id])
+  
+  // Agency/Tenant
+  agencyId        String?
+  agency          Agency? @relation(fields: [agencyId], references: [id])
+  
+  // Timestamps
+  submittedAt     DateTime @default(now())
+  reviewedAt      DateTime?
+  completedAt     DateTime?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  // Relations
+  documents       Document[]
+  acordForms      AcordForm[]
+  auditLogs       AuditLog[]
+  notifications   Notification[]
+  
+  @@map("submissions")
+}
+
+// Document Management
+model Document {
+  id          String @id @default(cuid())
+  submissionId String
+  fileName    String
+  originalName String
+  filePath    String
+  fileSize    Int
+  mimeType    String
+  fileHash    String @unique
+  
+  // Document metadata
+  documentType DocumentType
+  description String?
+  
+  // Upload information
+  uploadedBy  String
+  uploadedAt DateTime @default(now())
+  
+  // Relations
+  submission  Submission @relation(fields: [submissionId], references: [id], onDelete: Cascade)
+  
+  @@map("documents")
+}
+
+// ACORD Forms
+model AcordForm {
+  id          String @id @default(cuid())
+  submissionId String
+  formType    String // ACORD 125, 126, 127, etc.
+  formData    Json   // Form-specific data
+  
+  // Generation info
+  generatedBy String
+  generatedAt DateTime @default(now())
+  
+  // Status
+  status      AcordFormStatus @default(GENERATED)
+  signedAt    DateTime?
+  signedBy    String?
+  
+  // File info
+  filePath    String?
+  fileHash    String?
+  
+  // Relations
+  submission  Submission @relation(fields: [submissionId], references: [id], onDelete: Cascade)
+  
+  @@map("acord_forms")
+}
+
+// Field Mapping Configuration
+model FieldMapping {
+  id          String @id @default(cuid())
+  acordForm   String
+  fieldName   String
+  intakeField String
+  fieldType   FieldType
+  required    Boolean @default(false)
+  
+  // Agency/Tenant
+  agencyId    String?
+  agency      Agency? @relation(fields: [agencyId], references: [id])
+  
+  // Timestamps
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@map("field_mappings")
+}
+
+// Notifications
+model Notification {
+  id          String @id @default(cuid())
+  userId      String
+  type        NotificationType
+  title       String
+  message     String
+  data        Json?
+  
+  // Status
+  read        Boolean @default(false)
+  readAt      DateTime?
+  
+  // Relations
+  user        User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  submission  Submission? @relation(fields: [submissionId], references: [id])
+  submissionId String?
+  
+  // Timestamps
+  createdAt   DateTime @default(now())
+  
+  @@map("notifications")
+}
+
+// Audit Logging
+model AuditLog {
+  id          String @id @default(cuid())
+  userId      String?
+  action      String
+  resource    String
+  resourceId  String?
+  details     Json?
+  ipAddress   String?
+  userAgent   String?
+  
+  // Relations
+  user        User? @relation(fields: [userId], references: [id])
+  submission  Submission? @relation(fields: [submissionId], references: [id])
+  submissionId String?
+  
+  // Timestamps
+  createdAt   DateTime @default(now())
+  
+  @@map("audit_logs")
+}
+
+// System Settings
+model SystemSetting {
+  id          String @id @default(cuid())
+  key         String @unique
+  value       Json
+  description String?
+  
+  // Timestamps
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@map("system_settings")
+}
+
+// Enums
+enum UserRole {
+  ADMIN
+  BROKER
+  CUSTOMER
+}
+
+enum UserStatus {
+  ACTIVE
+  INACTIVE
+  SUSPENDED
+  PENDING
+}
+
+enum ClientType {
+  PERSONAL
+  BUSINESS
+  BOTH
+}
+
+enum SubmissionStatus {
+  NEW
+  REVIEW
+  SIGNATURE
+  COMPLETED
+  REJECTED
+  CANCELLED
+}
+
+enum Priority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+enum DocumentType {
+  APPLICATION
+  CERTIFICATE
+  POLICY
+  INVOICE
+  OTHER
+}
+
+enum AcordFormStatus {
+  GENERATED
+  SIGNED
+  REJECTED
+  EXPIRED
+}
+
+enum FieldType {
+  TEXT
+  TEXTAREA
+  NUMBER
+  SELECT
+  CHECKBOX
+  DATE
+  EMAIL
+  PHONE
+}
+
+enum NotificationType {
+  SUBMISSION_NEW
+  SUBMISSION_UPDATED
+  SUBMISSION_COMPLETED
+  DOCUMENT_UPLOADED
+  FORM_GENERATED
+  SIGNATURE_REQUIRED
+  SYSTEM_ALERT
+}

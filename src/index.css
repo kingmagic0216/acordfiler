@@ -1,0 +1,143 @@
+/* Professional Color Scheme - Updated to remove yellow tones */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
+All colors MUST be HSL.
+*/
+
+@layer base {
+  :root {
+    --background: 248 250 252;
+    --foreground: 15 23 42;
+
+    --card: 255 255 255;
+    --card-foreground: 15 23 42;
+
+    --popover: 255 255 255;
+    --popover-foreground: 15 23 42;
+
+    --primary: 30 58 138;
+    --primary-foreground: 248 250 252;
+
+    --secondary: 241 245 249;
+    --secondary-foreground: 51 65 85;
+
+    --muted: 248 250 252;
+          --muted-foreground: 71 85 105;
+
+    --accent: 30 58 138;
+    --accent-foreground: 248 250 252;
+
+    /* Insurance Professional Theme */
+    --insurance-navy: 30 58 138;
+    --insurance-navy-light: 37 99 235;
+    --insurance-blue: 59 130 246;
+    --insurance-gray: 71 85 105;
+    --insurance-gray-light: 148 163 184;
+    
+    /* Status Colors - More Professional */
+    --status-pending: 148 163 184;
+    --status-review: 59 130 246;
+    --status-approved: 34 197 94;
+    --status-rejected: 239 68 68;
+    
+    /* Gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(var(--insurance-navy)), hsl(var(--insurance-navy-light)));
+    --gradient-card: linear-gradient(135deg, hsl(var(--card)), hsl(var(--muted)));
+    
+    /* Shadows */
+    --shadow-elegant: 0 10px 25px -5px rgba(30, 58, 138, 0.1), 0 4px 6px -2px rgba(30, 58, 138, 0.05);
+    --shadow-form: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    
+    /* Transitions */
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 222.2 84% 4.9%;
+
+    --radius: 0.5rem;
+
+    --sidebar-background: 0 0% 98%;
+
+    --sidebar-foreground: 240 5.3% 26.1%;
+
+    --sidebar-primary: 240 5.9% 10%;
+
+    --sidebar-primary-foreground: 0 0% 98%;
+
+    --sidebar-accent: 240 4.8% 95.9%;
+
+    --sidebar-accent-foreground: 240 5.9% 10%;
+
+    --sidebar-border: 220 13% 91%;
+
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+
+  .dark {
+    --background: 15 23 42;
+    --foreground: 248 250 252;
+
+    --card: 30 41 59;
+    --card-foreground: 248 250 252;
+
+    --popover: 30 41 59;
+    --popover-foreground: 248 250 252;
+
+    --primary: 30 58 138;
+    --primary-foreground: 248 250 252;
+
+    --secondary: 51 65 85;
+    --secondary-foreground: 248 250 252;
+
+    --muted: 51 65 85;
+    --muted-foreground: 148 163 184;
+
+    --accent: 30 58 138;
+    --accent-foreground: 248 250 252;
+
+    /* Dark theme adjustments - More Professional */
+    --insurance-navy: 59 130 246;
+    --insurance-navy-light: 37 99 235;
+    --insurance-blue: 96 165 250;
+    --insurance-gray: 148 163 184;
+    --insurance-gray-light: 100 116 139;
+    
+    /* Dark theme status colors */
+    --status-pending: 100 116 139;
+    --status-review: 96 165 250;
+    --status-approved: 74 222 128;
+    --status-rejected: 248 113 113;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 212.7 26.8% 83.9%;
+    --sidebar-background: 240 5.9% 10%;
+    --sidebar-foreground: 240 4.8% 95.9%;
+    --sidebar-primary: 224.3 76.3% 48%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 240 3.7% 15.9%;
+    --sidebar-accent-foreground: 240 4.8% 95.9%;
+    --sidebar-border: 240 3.7% 15.9%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+}
