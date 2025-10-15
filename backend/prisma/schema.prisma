@@ -343,3 +343,4 @@ enum NotificationType {
   SIGNATURE_REQUIRED
   SYSTEM_ALERT
 }
+

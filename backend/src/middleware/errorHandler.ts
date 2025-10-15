@@ -153,3 +153,4 @@ export const handleDatabaseError = (error: any) => {
   }
   return new CustomError('Database error', 500);
 };
+

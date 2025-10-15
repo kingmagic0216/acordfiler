@@ -553,3 +553,4 @@ class SearchService {
 
 export const searchService = new SearchService();
 export default searchService;
+

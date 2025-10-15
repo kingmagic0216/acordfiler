@@ -46,7 +46,7 @@ const CustomerIntake = () => {
   const [coverageResponses, setCoverageResponses] = useState<Record<string, any>>({});
   const [currentUser, setCurrentUser] = useState<AuthUser | null>(null);
 
-  const totalSteps = 6;
+  const totalSteps = 7;
   const progress = (currentStep / totalSteps) * 100;
 
   const getStepTitle = (stepNumber: number) => {
@@ -54,15 +54,15 @@ const CustomerIntake = () => {
       case 1:
         return "Client Type";
       case 2:
+        return "Coverage Needs";
+      case 3:
+        return "Coverage Questions";
+      case 4:
         if (formData.clientType === 'personal') return "Personal Information";
         if (formData.clientType === 'business') return "Business Information";
         return "Personal & Business Information";
-      case 3:
-        return "Contact Details";
-      case 4:
-        return "Coverage Needs";
       case 5:
-        return "Coverage Questions";
+        return "Contact Details";
       case 6:
         return "Review & Submit";
       default:
@@ -75,15 +75,15 @@ const CustomerIntake = () => {
       case 1:
         return "Are you applying for personal or business insurance?";
       case 2:
+        return "What coverage do you need?";
+      case 3:
+        return "Answer coverage-specific questions";
+      case 4:
         if (formData.clientType === 'personal') return "Tell us about yourself";
         if (formData.clientType === 'business') return "Tell us about your business";
         return "Tell us about yourself and your business";
-      case 3:
-        return "How can we reach you?";
-      case 4:
-        return "What coverage do you need?";
       case 5:
-        return "Answer coverage-specific questions";
+        return "How can we reach you?";
       case 6:
         return "Confirm your information";
       default:
@@ -301,10 +301,240 @@ const CustomerIntake = () => {
         );
 
       case 2:
-        // Show different forms based on client type
+        // Coverage Needs Selection - GEICO Style
+        const coverageCategories = coverageQuestionsService.getCoverageTypesByCategory(formData.clientType);
+        
+        return (
+          <div className="space-y-6">
+            <div>
+              <h3 className="text-lg font-semibold mb-4">What coverage do you need?</h3>
+              <p className="text-gray-600 mb-6">
+                Select the types of insurance coverage you're looking for. We'll ask specific questions about each type you select.
+              </p>
+              
+              {Object.entries(coverageCategories).map(([category, coverages]) => (
+                <div key={category} className="mb-8">
+                  <h4 className="text-md font-semibold mb-4 text-gray-800">
+                    {coverageQuestionsService.getCategoryDisplayName(category)}
+                  </h4>
+                  <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {coverages.map((coverage) => (
+                      <Card 
+                        key={coverage.id}
+                        className={`p-4 cursor-pointer transition-all ${
+                          formData.coverageTypes.includes(coverage.id)
+                            ? 'ring-2 ring-insurance-blue bg-insurance-blue/5' 
+                            : 'hover:bg-muted/50'
+                        }`}
+                        onClick={() => handleCoverageChange(coverage.id, !formData.coverageTypes.includes(coverage.id))}
+                      >
+                        <div className="flex items-start space-x-3">
+                          <div className="text-2xl">{coverage.icon}</div>
+                          <div className="flex-1">
+                            <div className="flex items-center space-x-2 mb-1">
+                              <Checkbox 
+                                checked={formData.coverageTypes.includes(coverage.id)}
+                                onChange={() => {}} // Handled by Card onClick
+                              />
+                              <h5 className="font-medium text-sm">{coverage.name}</h5>
+                            </div>
+                            <p className="text-xs text-gray-600">{coverage.description}</p>
+                            <div className="mt-2">
+                              {coverage.acordForms.map((form, index) => (
+                                <Badge key={index} variant="outline" className="text-xs mr-1">
+                                  {form}
+                                </Badge>
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+                      </Card>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <Card className="p-4 bg-blue-50 border-blue-200">
+              <div className="flex items-start space-x-3">
+                <div className="h-5 w-5 rounded-full bg-blue-100 flex items-center justify-center mt-0.5">
+                  <span className="text-blue-600 text-xs">ℹ</span>
+                </div>
+                <div>
+                  <h4 className="font-semibold text-blue-900 mb-1">Need Help Choosing?</h4>
+                  <p className="text-sm text-blue-700">
+                    Don't worry if you're not sure which coverage you need. You can always add or remove coverage types later, 
+                    and our system will guide you through the specific questions for each type you select.
+                  </p>
+                </div>
+              </div>
+            </Card>
+          </div>
+        );
+
+      case 3:
+        // Coverage Questions - Dynamic questions based on selected coverage types
+        const selectedCoverageQuestions = coverageQuestionsService.getQuestionsForCoverages(
+          formData.coverageTypes, 
+          formData.clientType
+        );
+
+        if (selectedCoverageQuestions.length === 0) {
+          return (
+            <div className="space-y-6">
+              <div className="text-center py-8">
+                <div className="h-16 w-16 rounded-full bg-blue-100 flex items-center justify-center mx-auto mb-4">
+                  <Shield className="h-8 w-8 text-blue-600" />
+                </div>
+                <h3 className="text-lg font-semibold mb-2">No Coverage Selected</h3>
+                <p className="text-gray-600 mb-4">
+                  Please go back and select at least one type of coverage to continue.
+                </p>
+                <Button variant="outline" onClick={() => setCurrentStep(2)}>
+                  <ArrowLeft className="mr-2 h-4 w-4" />
+                  Back to Coverage Selection
+                </Button>
+              </div>
+            </div>
+          );
+        }
+
+        return (
+          <div className="space-y-6">
+            <div>
+              <h3 className="text-lg font-semibold mb-4">Coverage-Specific Questions</h3>
+              <p className="text-gray-600 mb-6">
+                Please answer these questions about the coverage types you selected. This helps us provide accurate quotes and generate the right ACORD forms.
+              </p>
+            </div>
+
+            <div className="space-y-6">
+              {selectedCoverageQuestions.map((question) => (
+                <Card key={question.id} className="p-4">
+                  <div className="space-y-3">
+                    <div className="flex items-start space-x-2">
+                      <Label htmlFor={question.id} className="text-sm font-medium">
+                        {question.question}
+                        {question.required && <span className="text-red-500 ml-1">*</span>}
+                      </Label>
+                    </div>
+                    
+                    {question.description && (
+                      <p className="text-xs text-gray-600">{question.description}</p>
+                    )}
+
+                    {question.type === 'text' && (
+                      <Input
+                        id={question.id}
+                        value={coverageResponses[question.id] || ''}
+                        onChange={(e) => handleCoverageQuestionChange(question.id, e.target.value)}
+                        placeholder={question.placeholder}
+                        required={question.required}
+                      />
+                    )}
+
+                    {question.type === 'textarea' && (
+                      <Textarea
+                        id={question.id}
+                        value={coverageResponses[question.id] || ''}
+                        onChange={(e) => handleCoverageQuestionChange(question.id, e.target.value)}
+                        placeholder={question.placeholder}
+                        rows={3}
+                        required={question.required}
+                      />
+                    )}
+
+                    {question.type === 'number' && (
+                      <Input
+                        id={question.id}
+                        type="number"
+                        value={coverageResponses[question.id] || ''}
+                        onChange={(e) => handleCoverageQuestionChange(question.id, parseInt(e.target.value) || '')}
+                        placeholder={question.placeholder}
+                        min={question.validation?.min}
+                        max={question.validation?.max}
+                        required={question.required}
+                      />
+                    )}
+
+                    {question.type === 'select' && question.options && (
+                      <Select
+                        value={coverageResponses[question.id] || ''}
+                        onValueChange={(value) => handleCoverageQuestionChange(question.id, value)}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder={question.placeholder || "Select an option"} />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {question.options.map((option) => (
+                            <SelectItem key={option} value={option}>
+                              {option}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    )}
+
+                    {question.type === 'checkbox' && question.options && (
+                      <div className="space-y-2">
+                        {question.options.map((option) => (
+                          <div key={option} className="flex items-center space-x-2">
+                            <Checkbox
+                              id={`${question.id}-${option}`}
+                              checked={Array.isArray(coverageResponses[question.id]) 
+                                ? (coverageResponses[question.id] as string[]).includes(option)
+                                : false
+                              }
+                              onCheckedChange={(checked) => {
+                                const currentValues = Array.isArray(coverageResponses[question.id]) 
+                                  ? coverageResponses[question.id] as string[]
+                                  : [];
+                                
+                                if (checked) {
+                                  handleCoverageQuestionChange(question.id, [...currentValues, option]);
+                                } else {
+                                  handleCoverageQuestionChange(question.id, currentValues.filter(v => v !== option));
+                                }
+                              }}
+                            />
+                            <Label htmlFor={`${question.id}-${option}`} className="text-sm">
+                              {option}
+                            </Label>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </Card>
+              ))}
+            </div>
+
+            <Card className="p-4 bg-green-50 border-green-200">
+              <div className="flex items-start space-x-3">
+                <div className="h-5 w-5 rounded-full bg-green-100 flex items-center justify-center mt-0.5">
+                  <span className="text-green-600 text-xs">✓</span>
+                </div>
+                <div>
+                  <h4 className="font-semibold text-green-900 mb-1">Great Progress!</h4>
+                  <p className="text-sm text-green-700">
+                    These answers will help us generate accurate ACORD forms and provide you with the best coverage options.
+                  </p>
+                </div>
+              </div>
+            </Card>
+          </div>
+        );
+
+      case 4:
+        // Personal/Business Information - Based on client type and coverage needs
         if (formData.clientType === 'personal') {
           return (
             <div className="space-y-6">
+              <div>
+                <h3 className="text-lg font-semibold mb-4">Personal Information</h3>
+                <p className="text-gray-600 mb-6">Tell us about yourself</p>
+              </div>
+              
               <div className="grid md:grid-cols-2 gap-4">
                 <div>
                   <Label htmlFor="firstName">First Name *</Label>
@@ -353,30 +583,36 @@ const CustomerIntake = () => {
                 </div>
               </div>
 
-              <div>
-                <Label htmlFor="occupation">Occupation *</Label>
-                <Input 
-                  id="occupation" 
-                  value={formData.occupation || ''}
-                  onChange={(e) => setFormData(prev => ({ ...prev, occupation: e.target.value }))}
-                  placeholder="Enter your occupation" 
-                />
-              </div>
-
-              <div>
-                <Label htmlFor="employer">Employer</Label>
-                <Input 
-                  id="employer" 
-                  value={formData.employer || ''}
-                  onChange={(e) => setFormData(prev => ({ ...prev, employer: e.target.value }))}
-                  placeholder="Enter your employer name" 
-                />
+              <div className="grid md:grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="occupation">Occupation *</Label>
+                  <Input 
+                    id="occupation" 
+                    value={formData.occupation || ''}
+                    onChange={(e) => setFormData(prev => ({ ...prev, occupation: e.target.value }))}
+                    placeholder="Enter your occupation" 
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="employer">Employer</Label>
+                  <Input 
+                    id="employer" 
+                    value={formData.employer || ''}
+                    onChange={(e) => setFormData(prev => ({ ...prev, employer: e.target.value }))}
+                    placeholder="Enter your employer name" 
+                  />
+                </div>
               </div>
             </div>
           );
         } else if (formData.clientType === 'business') {
           return (
             <div className="space-y-6">
+              <div>
+                <h3 className="text-lg font-semibold mb-4">Business Information</h3>
+                <p className="text-gray-600 mb-6">Tell us about your business</p>
+              </div>
+              
               <div className="grid md:grid-cols-2 gap-4">
                 <div>
                   <Label htmlFor="businessName">Business Name *</Label>
@@ -598,9 +834,15 @@ const CustomerIntake = () => {
           );
         }
 
-      case 3:
+      case 5:
+        // Contact Details - Universal contact information
         return (
           <div className="space-y-6">
+            <div>
+              <h3 className="text-lg font-semibold mb-4">Contact Details</h3>
+              <p className="text-gray-600 mb-6">How can we reach you?</p>
+            </div>
+            
             <div className="grid md:grid-cols-2 gap-4">
               <div>
                 <Label htmlFor="contactName">Contact Name *</Label>
@@ -618,7 +860,7 @@ const CustomerIntake = () => {
                   type="email"
                   value={formData.email}
                   onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
-                  placeholder="contact@business.com" 
+                  placeholder="contact@example.com" 
                 />
               </div>
             </div>
@@ -635,7 +877,7 @@ const CustomerIntake = () => {
             </div>
 
             <div>
-              <Label htmlFor="address">Business Address *</Label>
+              <Label htmlFor="address">Address *</Label>
               <Input 
                 id="address" 
                 value={formData.address}
@@ -665,6 +907,12 @@ const CustomerIntake = () => {
                     <SelectItem value="ny">New York</SelectItem>
                     <SelectItem value="tx">Texas</SelectItem>
                     <SelectItem value="fl">Florida</SelectItem>
+                    <SelectItem value="il">Illinois</SelectItem>
+                    <SelectItem value="pa">Pennsylvania</SelectItem>
+                    <SelectItem value="oh">Ohio</SelectItem>
+                    <SelectItem value="ga">Georgia</SelectItem>
+                    <SelectItem value="nc">North Carolina</SelectItem>
+                    <SelectItem value="mi">Michigan</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -677,167 +925,6 @@ const CustomerIntake = () => {
                   placeholder="12345" 
                 />
               </div>
-            </div>
-          </div>
-        );
-
-      case 4:
-        return (
-          <div className="space-y-6">
-            <div>
-              <h3 className="text-lg font-semibold mb-4">Select the coverage types you need:</h3>
-              <div className="grid md:grid-cols-2 gap-4">
-                {getCoverageOptions().map((option) => (
-                  <Card key={option.id} className="p-4">
-                    <div className="flex items-center space-x-3">
-                      <Checkbox 
-                        id={option.id}
-                        checked={formData.coverageTypes.includes(option.id)}
-                        onCheckedChange={(checked) => handleCoverageChange(option.id, checked as boolean)}
-                      />
-                      <div className="flex-1">
-                        <Label htmlFor={option.id} className="text-sm font-medium cursor-pointer">
-                          {option.label}
-                          {option.required && <Badge variant="destructive" className="ml-2 text-xs">Required</Badge>}
-                        </Label>
-                        <p className="text-xs text-muted-foreground mt-1">
-                          {coverageQuestionsService.getCoverageTypeById(option.id)?.description}
-                        </p>
-                      </div>
-                    </div>
-                  </Card>
-                ))}
-              </div>
-            </div>
-
-            <Card className="p-4 bg-muted/30">
-              <div className="flex items-start space-x-3">
-                <Upload className="h-5 w-5 text-insurance-blue mt-0.5" />
-                <div>
-                  <h4 className="font-semibold mb-2">Document Upload (Optional)</h4>
-                  <p className="text-sm text-muted-foreground mb-3">
-                    Upload any relevant documents such as current policies, loss runs, or financial statements.
-                  </p>
-                  <Button variant="outline" size="sm">
-                    <Upload className="mr-2 h-4 w-4" />
-                    Choose Files
-                  </Button>
-                </div>
-              </div>
-            </Card>
-          </div>
-        );
-
-      case 5:
-        return (
-          <div className="space-y-6">
-            <div>
-              <h3 className="text-lg font-semibold mb-4">Coverage-Specific Questions</h3>
-              <p className="text-muted-foreground mb-6">
-                Please answer these questions to help us provide accurate quotes for your selected coverage types.
-              </p>
-              
-              {coverageQuestions.length === 0 ? (
-                <Card className="p-6 text-center">
-                  <Shield className="h-12 w-12 text-muted-foreground mx-auto mb-3" />
-                  <h4 className="font-semibold mb-2">No Additional Questions</h4>
-                  <p className="text-muted-foreground">
-                    The coverage types you selected don't require additional information at this time.
-                  </p>
-                </Card>
-              ) : (
-                <div className="space-y-6">
-                  {coverageQuestions.map((question) => (
-                    <Card key={question.id} className="p-4">
-                      <div className="space-y-3">
-                        <div>
-                          <Label htmlFor={question.id} className="text-sm font-medium">
-                            {question.question}
-                            {question.required && <span className="text-red-500 ml-1">*</span>}
-                          </Label>
-                          {question.description && (
-                            <p className="text-xs text-muted-foreground mt-1">{question.description}</p>
-                          )}
-                        </div>
-                        
-                        {question.type === 'text' && (
-                          <Input
-                            id={question.id}
-                            value={coverageResponses[question.id] || ''}
-                            onChange={(e) => handleCoverageQuestionChange(question.id, e.target.value)}
-                            placeholder={question.placeholder}
-                            required={question.required}
-                          />
-                        )}
-                        
-                        {question.type === 'textarea' && (
-                          <Textarea
-                            id={question.id}
-                            value={coverageResponses[question.id] || ''}
-                            onChange={(e) => handleCoverageQuestionChange(question.id, e.target.value)}
-                            placeholder={question.placeholder}
-                            rows={3}
-                            required={question.required}
-                          />
-                        )}
-                        
-                        {question.type === 'number' && (
-                          <Input
-                            id={question.id}
-                            type="number"
-                            value={coverageResponses[question.id] || ''}
-                            onChange={(e) => handleCoverageQuestionChange(question.id, parseInt(e.target.value) || '')}
-                            min={question.validation?.min}
-                            max={question.validation?.max}
-                            required={question.required}
-                          />
-                        )}
-                        
-                        {question.type === 'select' && question.options && (
-                          <Select
-                            value={coverageResponses[question.id] || ''}
-                            onValueChange={(value) => handleCoverageQuestionChange(question.id, value)}
-                          >
-                            <SelectTrigger>
-                              <SelectValue placeholder="Select an option" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              {question.options.map((option) => (
-                                <SelectItem key={option} value={option}>
-                                  {option}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                        )}
-                        
-                        {question.type === 'checkbox' && question.options && (
-                          <div className="space-y-2">
-                            {question.options.map((option) => (
-                              <div key={option} className="flex items-center space-x-2">
-                                <Checkbox
-                                  id={`${question.id}-${option}`}
-                                  checked={(coverageResponses[question.id] || []).includes(option)}
-                                  onCheckedChange={(checked) => {
-                                    const currentValues = coverageResponses[question.id] || [];
-                                    const newValues = checked
-                                      ? [...currentValues, option]
-                                      : currentValues.filter((v: string) => v !== option);
-                                    handleCoverageQuestionChange(question.id, newValues);
-                                  }}
-                                />
-                                <Label htmlFor={`${question.id}-${option}`} className="text-sm">
-                                  {option}
-                                </Label>
-                              </div>
-                            ))}
-                          </div>
-                        )}
-                      </div>
-                    </Card>
-                  ))}
-                </div>
-              )}
             </div>
           </div>
         );
@@ -1016,15 +1103,15 @@ const CustomerIntake = () => {
 
           {/* Form Content */}
           {!submissionResult?.success && (
-            <Card className="shadow-form">
-              <CardHeader>
-                <CardTitle>{steps[currentStep - 1].title}</CardTitle>
-                <CardDescription>{steps[currentStep - 1].description}</CardDescription>
-              </CardHeader>
-              <CardContent>
-                {renderStepContent()}
-              </CardContent>
-            </Card>
+          <Card className="shadow-form">
+            <CardHeader>
+              <CardTitle>{steps[currentStep - 1].title}</CardTitle>
+              <CardDescription>{steps[currentStep - 1].description}</CardDescription>
+            </CardHeader>
+            <CardContent>
+              {renderStepContent()}
+            </CardContent>
+          </Card>
           )}
 
           {/* Navigation */}
@@ -1052,8 +1139,8 @@ const CustomerIntake = () => {
                   </>
                 ) : (
                   <>
-                    Submit Application
-                    <CheckCircle className="ml-2 h-4 w-4" />
+                Submit Application
+                <CheckCircle className="ml-2 h-4 w-4" />
                   </>
                 )}
               </Button>

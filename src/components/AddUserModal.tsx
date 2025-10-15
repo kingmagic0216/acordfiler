@@ -162,3 +162,4 @@ const AddUserModal = ({ isOpen, onClose, onUserAdded }: AddUserModalProps) => {
 };
 
 export default AddUserModal;
+

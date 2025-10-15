@@ -69,3 +69,4 @@ ENV PORT=3001
 
 # Start services
 ENTRYPOINT ["./entrypoint.sh"]
+

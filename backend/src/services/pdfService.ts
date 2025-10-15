@@ -551,3 +551,4 @@ function getApplicationType(formType: string): string {
       return 'Commercial Insurance';
   }
 }
+

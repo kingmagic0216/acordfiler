@@ -77,3 +77,4 @@ export const passwordResetRateLimit = rateLimitMiddleware({
   maxRequests: 3, // 3 password reset attempts per hour
   message: 'Too many password reset attempts, please try again later.'
 });
+

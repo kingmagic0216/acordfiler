@@ -177,3 +177,4 @@ const EditUserModal = ({ isOpen, onClose, user, onUserUpdated }: EditUserModalPr
 };
 
 export default EditUserModal;
+

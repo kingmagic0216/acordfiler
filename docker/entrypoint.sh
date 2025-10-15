@@ -9,3 +9,4 @@ nginx -g "daemon off;" &
 
 # Wait for any process to exit
 wait
+
