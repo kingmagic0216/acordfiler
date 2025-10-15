@@ -112,6 +112,7 @@ const CustomerIntake = () => {
     { number: 4, title: getStepTitle(4), description: getStepDescription(4) },
     { number: 5, title: getStepTitle(5), description: getStepDescription(5) },
     { number: 6, title: getStepTitle(6), description: getStepDescription(6) },
+    { number: 7, title: getStepTitle(7), description: getStepDescription(7) },
   ];
 
   const getCoverageOptions = () => {
