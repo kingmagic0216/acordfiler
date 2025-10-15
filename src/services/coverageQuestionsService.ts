@@ -42,7 +42,7 @@ class CoverageQuestionsService {
       id: 'personal-auto',
       name: 'Personal Auto',
       description: 'Coverage for personal vehicles and liability while driving',
-      acordForms: ['ACORD 125'],
+      acordForms: ['ACORD 125', 'ACORD 129'],
       clientTypes: ['personal', 'both'],
       category: 'vehicle',
       icon: '🚗',
@@ -57,13 +57,59 @@ class CoverageQuestionsService {
           description: 'Include all vehicles registered in your name'
         },
         {
-          id: 'vehicle-types',
-          question: 'What types of personal vehicles do you own? (Select all that apply)',
-          type: 'checkbox',
+          id: 'vehicle-year',
+          question: 'What year is your primary vehicle?',
+          type: 'number',
           required: true,
-          options: ['Car', 'SUV', 'Truck', 'Motorcycle', 'RV', 'Other'],
-          acordField: 'vehicle_types',
-          description: 'Select all vehicle types you currently own'
+          validation: { min: 1990, max: new Date().getFullYear() + 1 },
+          acordField: 'vehicle_year',
+          description: 'Model year of your primary vehicle'
+        },
+        {
+          id: 'vehicle-make',
+          question: 'What is the make of your primary vehicle?',
+          type: 'text',
+          required: true,
+          placeholder: 'e.g., Ford, Toyota, Honda',
+          acordField: 'vehicle_make',
+          description: 'Manufacturer of your primary vehicle'
+        },
+        {
+          id: 'vehicle-model',
+          question: 'What is the model of your primary vehicle?',
+          type: 'text',
+          required: true,
+          placeholder: 'e.g., F-150, Camry, Civic',
+          acordField: 'vehicle_model',
+          description: 'Model name of your primary vehicle'
+        },
+        {
+          id: 'vehicle-vin',
+          question: 'What is the VIN of your primary vehicle?',
+          type: 'text',
+          required: false,
+          placeholder: '17-character Vehicle Identification Number',
+          validation: { pattern: '^[A-HJ-NPR-Z0-9]{17}$' },
+          acordField: 'vehicle_vin',
+          description: 'Vehicle Identification Number (optional but recommended)'
+        },
+        {
+          id: 'vehicle-body-type',
+          question: 'What is the body type of your primary vehicle?',
+          type: 'select',
+          required: true,
+          options: ['Sedan', 'SUV', 'Truck', 'Coupe', 'Convertible', 'Hatchback', 'Wagon', 'Van', 'Other'],
+          acordField: 'vehicle_body_type',
+          description: 'Body style of your primary vehicle'
+        },
+        {
+          id: 'vehicle-registration-state',
+          question: 'In which state is your vehicle registered?',
+          type: 'select',
+          required: true,
+          options: ['AL', 'AK', 'AZ', 'AR', 'CA', 'CO', 'CT', 'DE', 'FL', 'GA', 'HI', 'ID', 'IL', 'IN', 'IA', 'KS', 'KY', 'LA', 'ME', 'MD', 'MA', 'MI', 'MN', 'MS', 'MO', 'MT', 'NE', 'NV', 'NH', 'NJ', 'NM', 'NY', 'NC', 'ND', 'OH', 'OK', 'OR', 'PA', 'RI', 'SC', 'SD', 'TN', 'TX', 'UT', 'VT', 'VA', 'WA', 'WV', 'WI', 'WY'],
+          acordField: 'vehicle_registration_state',
+          description: 'State where your vehicle is registered'
         },
         {
           id: 'annual-miles',
@@ -212,13 +258,13 @@ class CoverageQuestionsService {
       id: 'commercial-auto',
       name: 'Commercial Auto',
       description: 'Coverage for business vehicles and liability while driving for business',
-      acordForms: ['ACORD 127', 'ACORD 125'],
+      acordForms: ['ACORD 127', 'ACORD 125', 'ACORD 137'],
       clientTypes: ['business', 'both'],
       category: 'vehicle',
       icon: '🚛',
       questions: [
         {
-          id: 'vehicle-count',
+          id: 'commercial-vehicle-count',
           question: 'Number of commercial vehicles?',
           type: 'number',
           required: true,
@@ -227,7 +273,16 @@ class CoverageQuestionsService {
           description: 'Vehicles used for business purposes'
         },
         {
-          id: 'vehicle-types',
+          id: 'commercial-auto-symbol',
+          question: 'What type of commercial auto coverage do you need?',
+          type: 'select',
+          required: true,
+          options: ['Any Auto', 'Owned Autos Only', 'Owned Private Passenger Autos Only', 'Owned Autos Other Than Private Passenger', 'Specifically Described Autos', 'Hired Autos Only', 'Non-Owned Autos Only'],
+          acordField: 'commercial_auto_symbol',
+          description: 'Type of commercial auto coverage needed'
+        },
+        {
+          id: 'commercial-vehicle-types',
           question: 'Types of commercial vehicles? (Select all that apply)',
           type: 'checkbox',
           required: true,
@@ -236,7 +291,7 @@ class CoverageQuestionsService {
           description: 'Types of vehicles used for business'
         },
         {
-          id: 'annual-miles',
+          id: 'commercial-annual-miles',
           question: 'Estimated annual business miles driven?',
           type: 'select',
           required: true,
@@ -245,13 +300,31 @@ class CoverageQuestionsService {
           description: 'Total annual mileage for business use'
         },
         {
-          id: 'driver-count',
+          id: 'commercial-driver-count',
           question: 'Number of commercial drivers?',
           type: 'number',
           required: true,
           validation: { min: 1, max: 100 },
           acordField: 'commercial_driver_count',
           description: 'Employees who drive for business purposes'
+        },
+        {
+          id: 'bodily-injury-limit',
+          question: 'Desired bodily injury liability limit per person?',
+          type: 'select',
+          required: true,
+          options: ['$25,000', '$50,000', '$100,000', '$250,000', '$500,000', '$1,000,000+'],
+          acordField: 'bodily_injury_limit',
+          description: 'Bodily injury liability limit per person'
+        },
+        {
+          id: 'property-damage-limit',
+          question: 'Desired property damage liability limit per accident?',
+          type: 'select',
+          required: true,
+          options: ['$25,000', '$50,000', '$100,000', '$250,000', '$500,000', '$1,000,000+'],
+          acordField: 'property_damage_limit',
+          description: 'Property damage liability limit per accident'
         }
       ]
     },
@@ -412,6 +485,33 @@ class CoverageQuestionsService {
           description: 'Detailed description of business activities'
         },
         {
+          id: 'business-classification',
+          question: 'What is your primary business classification?',
+          type: 'select',
+          required: true,
+          options: ['Office/Clerical', 'Retail', 'Construction', 'Manufacturing', 'Healthcare', 'Food Service', 'Professional Services', 'Technology', 'Real Estate', 'Transportation', 'Other'],
+          acordField: 'business_classification',
+          description: 'Primary type of business activity'
+        },
+        {
+          id: 'sic-code',
+          question: 'Do you know your SIC (Standard Industry Classification) code?',
+          type: 'text',
+          required: false,
+          placeholder: 'e.g., 5411 (Legal Services), 7372 (Software)',
+          acordField: 'sic_code',
+          description: 'Standard Industry Classification code (optional)'
+        },
+        {
+          id: 'naics-code',
+          question: 'Do you know your NAICS (North American Industry Classification) code?',
+          type: 'text',
+          required: false,
+          placeholder: 'e.g., 541110 (Offices of Lawyers), 541511 (Custom Computer Programming)',
+          acordField: 'naics_code',
+          description: 'North American Industry Classification code (optional)'
+        },
+        {
           id: 'employee-count',
           question: 'Number of employees?',
           type: 'number',
@@ -428,6 +528,24 @@ class CoverageQuestionsService {
           options: ['Under $100,000', '$100,000-$500,000', '$500,000-$1,000,000', '$1,000,000-$5,000,000', '$5,000,000+'],
           acordField: 'annual_revenue',
           description: 'Gross annual revenue'
+        },
+        {
+          id: 'business-location-count',
+          question: 'How many business locations do you have?',
+          type: 'number',
+          required: true,
+          validation: { min: 1, max: 50 },
+          acordField: 'business_location_count',
+          description: 'Number of physical business locations'
+        },
+        {
+          id: 'products-completed-operations',
+          question: 'Do you need Products & Completed Operations coverage?',
+          type: 'select',
+          required: true,
+          options: ['Yes', 'No', 'Not Sure'],
+          acordField: 'products_completed_operations',
+          description: 'Coverage for products you make or work you complete'
         }
       ]
     },
@@ -441,7 +559,7 @@ class CoverageQuestionsService {
       icon: '👷',
       questions: [
         {
-          id: 'employee-count',
+          id: 'wc-employee-count',
           question: 'Number of employees requiring workers\' compensation?',
           type: 'number',
           required: true,
@@ -450,7 +568,7 @@ class CoverageQuestionsService {
           description: 'Employees who need workers\' compensation coverage'
         },
         {
-          id: 'payroll-amount',
+          id: 'annual-payroll',
           question: 'Estimated annual payroll?',
           type: 'select',
           required: true,
@@ -459,13 +577,58 @@ class CoverageQuestionsService {
           description: 'Total annual payroll for covered employees'
         },
         {
-          id: 'business-classification',
-          question: 'Primary business classification?',
+          id: 'wc-business-classification',
+          question: 'Primary business classification for workers\' comp?',
           type: 'select',
           required: true,
-          options: ['Office/Clerical', 'Retail', 'Construction', 'Manufacturing', 'Healthcare', 'Food Service', 'Other'],
-          acordField: 'business_classification',
+          options: ['Office/Clerical', 'Retail', 'Construction', 'Manufacturing', 'Healthcare', 'Food Service', 'Professional Services', 'Technology', 'Real Estate', 'Transportation', 'Other'],
+          acordField: 'wc_business_classification',
           description: 'Main type of work performed by employees'
+        },
+        {
+          id: 'wc-sic-code',
+          question: 'Do you know your SIC code for workers\' comp?',
+          type: 'text',
+          required: false,
+          placeholder: 'e.g., 5411 (Legal Services), 7372 (Software)',
+          acordField: 'wc_sic_code',
+          description: 'Standard Industry Classification code for workers\' comp (optional)'
+        },
+        {
+          id: 'wc-naics-code',
+          question: 'Do you know your NAICS code for workers\' comp?',
+          type: 'text',
+          required: false,
+          placeholder: 'e.g., 541110 (Offices of Lawyers), 541511 (Custom Computer Programming)',
+          acordField: 'wc_naics_code',
+          description: 'North American Industry Classification code for workers\' comp (optional)'
+        },
+        {
+          id: 'years-in-business',
+          question: 'How many years have you been in business?',
+          type: 'number',
+          required: true,
+          validation: { min: 0, max: 100 },
+          acordField: 'years_in_business',
+          description: 'Number of years your business has been operating'
+        },
+        {
+          id: 'highest-floor-count',
+          question: 'What is the highest floor of your business location?',
+          type: 'number',
+          required: false,
+          validation: { min: 1, max: 100 },
+          acordField: 'highest_floor_count',
+          description: 'Highest floor number of your business location (optional)'
+        },
+        {
+          id: 'business-county',
+          question: 'What county is your business located in?',
+          type: 'text',
+          required: true,
+          placeholder: 'e.g., Los Angeles County, Cook County',
+          acordField: 'business_county',
+          description: 'County where your business is located'
         }
       ]
     },
@@ -473,13 +636,13 @@ class CoverageQuestionsService {
       id: 'property',
       name: 'Business Property',
       description: 'Coverage for business property, equipment, and inventory',
-      acordForms: ['ACORD 140', 'ACORD 125'],
+      acordForms: ['ACORD 140', 'ACORD 125', 'ACORD 24', 'ACORD 160'],
       clientTypes: ['business', 'both'],
       category: 'business',
       icon: '🏭',
       questions: [
         {
-          id: 'property-value',
+          id: 'business-property-value',
           question: 'Estimated value of business property?',
           type: 'select',
           required: true,
@@ -492,7 +655,7 @@ class CoverageQuestionsService {
           question: 'Type of business property?',
           type: 'select',
           required: true,
-          options: ['Owned Building', 'Leased Space', 'Home Office', 'Warehouse', 'Retail Space', 'Other'],
+          options: ['Owned Building', 'Leased Space', 'Home Office', 'Warehouse', 'Retail Space', 'Manufacturing Facility', 'Office Building', 'Other'],
           acordField: 'property_type',
           description: 'Primary business location type'
         },
@@ -504,6 +667,51 @@ class CoverageQuestionsService {
           options: ['None', 'Under $25,000', '$25,000-$50,000', '$50,000-$100,000', '$100,000+'],
           acordField: 'inventory_value',
           description: 'Value of business inventory and stock'
+        },
+        {
+          id: 'building-description',
+          question: 'Describe your business building/property',
+          type: 'textarea',
+          required: true,
+          placeholder: 'Describe the building type, construction materials, age, etc.',
+          acordField: 'building_description',
+          description: 'Detailed description of your business property'
+        },
+        {
+          id: 'property-address',
+          question: 'What is the address of your business property?',
+          type: 'text',
+          required: true,
+          placeholder: 'Street address, City, State, ZIP',
+          acordField: 'property_address',
+          description: 'Physical address of your business property'
+        },
+        {
+          id: 'property-county',
+          question: 'What county is your business property in?',
+          type: 'text',
+          required: true,
+          placeholder: 'e.g., Los Angeles County, Cook County',
+          acordField: 'property_county',
+          description: 'County where your business property is located'
+        },
+        {
+          id: 'hazardous-materials',
+          question: 'Do your operations involve storing, treating, discharging, applying, disposing, or transporting hazardous materials?',
+          type: 'select',
+          required: true,
+          options: ['Yes', 'No', 'Not Sure'],
+          acordField: 'hazardous_materials',
+          description: 'Whether your business handles hazardous materials'
+        },
+        {
+          id: 'athletic-teams',
+          question: 'Do you sponsor athletic teams?',
+          type: 'select',
+          required: true,
+          options: ['Yes', 'No'],
+          acordField: 'athletic_teams',
+          description: 'Whether your business sponsors athletic teams'
         }
       ]
     },

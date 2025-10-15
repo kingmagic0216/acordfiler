@@ -14,12 +14,16 @@ import { Link, useNavigate } from "react-router-dom";
 import { formService, BusinessInfo, ContactInfo, CoverageInfo } from "@/services/formService";
 import { authService, User as AuthUser } from "@/services/authService";
 import { coverageQuestionsService, CoverageQuestion, CoverageResponse, ClientType } from "@/services/coverageQuestionsService";
+import { acordFormGenerator, CustomerData, ACORDForm } from "@/services/acordFormGenerator";
+import { pdfGenerator } from "@/services/pdfGenerator";
 
 const CustomerIntake = () => {
   const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submissionResult, setSubmissionResult] = useState<{ success: boolean; submissionId?: string; error?: string } | null>(null);
+  const [generatedACORDForms, setGeneratedACORDForms] = useState<ACORDForm[]>([]);
+  const [isGeneratingForms, setIsGeneratingForms] = useState(false);
   const [formData, setFormData] = useState({
     // Step 1: Location & Coverage Type
     zipCode: "",
@@ -168,6 +172,30 @@ const CustomerIntake = () => {
     }));
   };
 
+  const handleDownloadAllForms = async () => {
+    if (generatedACORDForms.length === 0) return;
+    
+    try {
+      const blob = await pdfGenerator.generateAllFormsPDF(generatedACORDForms);
+      pdfGenerator.downloadPDF(blob, `ACORD_Forms_${formData.businessName || 'Application'}.pdf`);
+    } catch (error) {
+      console.error('Error downloading forms:', error);
+    }
+  };
+
+  const handlePreviewForm = (form: ACORDForm) => {
+    pdfGenerator.previewForm(form);
+  };
+
+  const handleDownloadForm = async (form: ACORDForm) => {
+    try {
+      const blob = await pdfGenerator.generateACORDPDF(form);
+      pdfGenerator.downloadPDF(blob, `${form.formType}_${formData.businessName || 'Application'}.pdf`);
+    } catch (error) {
+      console.error('Error downloading form:', error);
+    }
+  };
+
   const handleSubmit = async () => {
     setIsSubmitting(true);
     setSubmissionResult(null);
@@ -216,6 +244,43 @@ const CustomerIntake = () => {
 
       // Submit the form
       const submission = await formService.submitForm(businessInfo, contactInfo, coverageInfo);
+      
+      // Generate ACORD forms with customer data
+      setIsGeneratingForms(true);
+      try {
+        const customerData: CustomerData = {
+          firstName: formData.contactName.split(' ')[0],
+          lastName: formData.contactName.split(' ').slice(1).join(' '),
+          businessName: formData.businessName,
+          federalId: formData.federalId,
+          businessType: formData.businessType,
+          yearsInBusiness: formData.yearsInBusiness,
+          description: formData.description,
+          website: formData.website,
+          contactName: formData.contactName,
+          email: formData.email,
+          phone: formData.phone,
+          address: formData.address,
+          city: formData.city,
+          state: formData.state,
+          zip: formData.zip,
+          zipCode: formData.zipCode,
+          coverageTypes: formData.coverageTypes,
+          insuranceType: formData.insuranceType,
+          clientType: formData.clientType,
+          coverageAnswers: coverageResponses.reduce((acc, response) => {
+            acc[response.coverageType] = response.answers;
+            return acc;
+          }, {} as Record<string, any>)
+        };
+
+        const acordForms = acordFormGenerator.generateACORDForms(customerData);
+        setGeneratedACORDForms(acordForms);
+      } catch (error) {
+        console.error('Error generating ACORD forms:', error);
+      } finally {
+        setIsGeneratingForms(false);
+      }
       
       setSubmissionResult({
         success: true,
@@ -1227,7 +1292,56 @@ const CustomerIntake = () => {
                     <p className="text-muted-foreground mb-2">
                       Your application has been submitted with ID: <strong>{submissionResult.submissionId}</strong>
                     </p>
-                    <p className="text-sm text-muted-foreground">
+                    
+                    {/* ACORD Forms Generation */}
+                    {isGeneratingForms ? (
+                      <div className="mt-4 p-4 bg-blue-50 rounded-lg">
+                        <Loader2 className="h-6 w-6 animate-spin mx-auto mb-2 text-blue-600" />
+                        <p className="text-blue-700 font-medium">Generating ACORD Forms...</p>
+                        <p className="text-sm text-blue-600">Please wait while we populate your forms with your answers</p>
+                      </div>
+                    ) : generatedACORDForms.length > 0 ? (
+                      <div className="mt-6 text-left">
+                        <h4 className="text-lg font-semibold mb-4 text-center">📋 Your ACORD Forms Are Ready!</h4>
+                        <div className="grid gap-3 mb-4">
+                          {generatedACORDForms.map((form, index) => (
+                            <div key={index} className="flex items-center justify-between p-3 bg-green-50 border border-green-200 rounded-lg">
+                              <div>
+                                <h5 className="font-medium text-green-800">{form.formName}</h5>
+                                <p className="text-sm text-green-600">{form.formType} • {form.fields.length} fields populated</p>
+                              </div>
+                              <div className="flex space-x-2">
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  onClick={() => handlePreviewForm(form)}
+                                  className="text-green-700 border-green-300 hover:bg-green-100"
+                                >
+                                  Preview
+                                </Button>
+                                <Button
+                                  size="sm"
+                                  onClick={() => handleDownloadForm(form)}
+                                  className="bg-green-600 hover:bg-green-700"
+                                >
+                                  Download
+                                </Button>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                        <div className="text-center">
+                          <Button
+                            onClick={handleDownloadAllForms}
+                            className="bg-blue-600 hover:bg-blue-700"
+                          >
+                            📥 Download All Forms
+                          </Button>
+                        </div>
+                      </div>
+                    ) : null}
+                    
+                    <p className="text-sm text-muted-foreground mt-4">
                       You will be redirected to the broker console in a few seconds...
                     </p>
                   </div>
