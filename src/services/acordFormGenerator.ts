@@ -225,22 +225,35 @@ class ACORDFormGenerator {
     
     // Map coverage types to their required ACORD forms
     const coverageToForms: Record<string, string[]> = {
+      // Personal Insurance
       'personal-auto': ['ACORD 125', 'ACORD 129'],
       'motorcycle': ['ACORD 125', 'ACORD 127'],
       'rv': ['ACORD 125', 'ACORD 127'],
       'boat': ['ACORD 125', 'ACORD 140'],
-      'commercial-auto': ['ACORD 127', 'ACORD 125', 'ACORD 137'],
       'homeowners': ['ACORD 125', 'ACORD 140'],
       'renters': ['ACORD 125', 'ACORD 140'],
       'condo': ['ACORD 125', 'ACORD 140'],
       'flood': ['ACORD 125', 'ACORD 140'],
-      'general-liability': ['ACORD 126', 'ACORD 125'],
-      'workers-compensation': ['ACORD 130', 'ACORD 125'],
-      'property': ['ACORD 140', 'ACORD 125', 'ACORD 24', 'ACORD 160'],
-      'cyber-liability': ['ACORD 126', 'ACORD 125'],
-      'umbrella': ['ACORD 125', 'ACORD 126'],
       'life': ['ACORD 125', 'ACORD 140'],
-      'pet': ['ACORD 125', 'ACORD 140']
+      'pet': ['ACORD 125', 'ACORD 140'],
+      
+      // Commercial Insurance (with proper names from demo data)
+      'General Liability': ['ACORD 126', 'ACORD 125'],
+      'general-liability': ['ACORD 126', 'ACORD 125'],
+      'Property Insurance': ['ACORD 140', 'ACORD 125', 'ACORD 24', 'ACORD 160'],
+      'property': ['ACORD 140', 'ACORD 125', 'ACORD 24', 'ACORD 160'],
+      'Workers\' Compensation': ['ACORD 130', 'ACORD 125'],
+      'workers-compensation': ['ACORD 130', 'ACORD 125'],
+      'Commercial Auto': ['ACORD 127', 'ACORD 125', 'ACORD 137'],
+      'commercial-auto': ['ACORD 127', 'ACORD 125', 'ACORD 137'],
+      'Cyber Liability': ['ACORD 126', 'ACORD 125'],
+      'cyber-liability': ['ACORD 126', 'ACORD 125'],
+      'Professional Liability': ['ACORD 126', 'ACORD 125'],
+      'professional-liability': ['ACORD 126', 'ACORD 125'],
+      'Business Property': ['ACORD 140', 'ACORD 125', 'ACORD 24', 'ACORD 160'],
+      'business-property': ['ACORD 140', 'ACORD 125', 'ACORD 24', 'ACORD 160'],
+      'Umbrella': ['ACORD 125', 'ACORD 126'],
+      'umbrella': ['ACORD 125', 'ACORD 126']
     };
     
     coverageTypes.forEach(coverageType => {
