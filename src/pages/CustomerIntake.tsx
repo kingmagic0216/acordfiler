@@ -735,76 +735,76 @@ const CustomerIntake = () => {
                 <p className="text-gray-600 mb-6">Tell us about your business</p>
               </div>
               
-              <div className="grid md:grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="businessName">Business Name *</Label>
-                  <Input 
-                    id="businessName" 
-                    value={formData.businessName}
-                    onChange={(e) => setFormData(prev => ({ ...prev, businessName: e.target.value }))}
-                    placeholder="Enter your business name" 
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="federalId">Federal ID/EIN *</Label>
-                  <Input 
-                    id="federalId" 
-                    value={formData.federalId}
-                    onChange={(e) => setFormData(prev => ({ ...prev, federalId: e.target.value }))}
-                    placeholder="XX-XXXXXXX" 
-                  />
-                </div>
-              </div>
-
-              <div className="grid md:grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="businessType">Business Type *</Label>
-                  <Select value={formData.businessType} onValueChange={(value) => setFormData(prev => ({ ...prev, businessType: value }))}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select business type" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="corporation">Corporation</SelectItem>
-                      <SelectItem value="llc">LLC</SelectItem>
-                      <SelectItem value="partnership">Partnership</SelectItem>
-                      <SelectItem value="sole-proprietorship">Sole Proprietorship</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div>
-                  <Label htmlFor="yearsInBusiness">Years in Business *</Label>
-                  <Input 
-                    id="yearsInBusiness" 
-                    type="number"
-                    value={formData.yearsInBusiness}
-                    onChange={(e) => setFormData(prev => ({ ...prev, yearsInBusiness: e.target.value }))}
-                    placeholder="0" 
-                  />
-                </div>
-              </div>
-
+            <div className="grid md:grid-cols-2 gap-4">
               <div>
-                <Label htmlFor="description">Business Description *</Label>
-                <Textarea 
-                  id="description" 
-                  value={formData.description}
-                  onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-                  placeholder="Describe your business operations, products, and services"
-                  rows={3}
+                <Label htmlFor="businessName">Business Name *</Label>
+                <Input 
+                  id="businessName" 
+                  value={formData.businessName}
+                  onChange={(e) => setFormData(prev => ({ ...prev, businessName: e.target.value }))}
+                  placeholder="Enter your business name" 
                 />
               </div>
-
               <div>
-                <Label htmlFor="website">Website</Label>
+                <Label htmlFor="federalId">Federal ID/EIN *</Label>
                 <Input 
-                  id="website" 
-                  value={formData.website}
-                  onChange={(e) => setFormData(prev => ({ ...prev, website: e.target.value }))}
-                  placeholder="https://www.example.com" 
+                  id="federalId" 
+                  value={formData.federalId}
+                  onChange={(e) => setFormData(prev => ({ ...prev, federalId: e.target.value }))}
+                  placeholder="XX-XXXXXXX" 
                 />
               </div>
             </div>
-          );
+
+            <div className="grid md:grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="businessType">Business Type *</Label>
+                <Select value={formData.businessType} onValueChange={(value) => setFormData(prev => ({ ...prev, businessType: value }))}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select business type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="corporation">Corporation</SelectItem>
+                    <SelectItem value="llc">LLC</SelectItem>
+                    <SelectItem value="partnership">Partnership</SelectItem>
+                    <SelectItem value="sole-proprietorship">Sole Proprietorship</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label htmlFor="yearsInBusiness">Years in Business *</Label>
+                <Input 
+                  id="yearsInBusiness" 
+                  type="number"
+                  value={formData.yearsInBusiness}
+                  onChange={(e) => setFormData(prev => ({ ...prev, yearsInBusiness: e.target.value }))}
+                  placeholder="0" 
+                />
+              </div>
+            </div>
+
+            <div>
+              <Label htmlFor="description">Business Description *</Label>
+              <Textarea 
+                id="description" 
+                value={formData.description}
+                onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+                placeholder="Describe your business operations, products, and services"
+                  rows={3}
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="website">Website</Label>
+              <Input 
+                id="website" 
+                value={formData.website}
+                onChange={(e) => setFormData(prev => ({ ...prev, website: e.target.value }))}
+                placeholder="https://www.example.com" 
+              />
+            </div>
+          </div>
+        );
         } else {
           // Both personal and business
           return (
@@ -1121,7 +1121,7 @@ const CustomerIntake = () => {
                           <div className="text-sm font-medium text-gray-700">{question.question}</div>
                           <div className="text-sm text-gray-600 mt-1">
                             {Array.isArray(response) ? response.join(', ') : String(response)}
-                          </div>
+            </div>
                         </div>
                       );
                     })}
