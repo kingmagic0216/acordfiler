@@ -237,8 +237,9 @@ const CustomerIntake = () => {
 
       const coverageInfo: CoverageInfo = {
         coverageTypes: formData.coverageTypes.map(id => {
-          const option = coverageOptions.find(opt => opt.id === id);
-          return option ? option.label : id;
+          const availableCoverages = coverageQuestionsService.getCoverageTypes(formData.clientType as ClientType);
+          const option = availableCoverages.find(opt => opt.id === id);
+          return option ? option.name : id;
         }),
         coverageResponses: coverageResponses,
       };
@@ -1160,9 +1161,10 @@ const CustomerIntake = () => {
                   <div className="flex flex-wrap gap-2">
                     {formData.coverageTypes.length > 0 ? (
                       formData.coverageTypes.map((typeId) => {
-                        const option = coverageOptions.find(opt => opt.id === typeId);
+                        const availableCoverages = coverageQuestionsService.getCoverageTypes(formData.clientType as ClientType);
+                        const option = availableCoverages.find(opt => opt.id === typeId);
                         return option ? (
-                          <Badge key={typeId} variant="secondary">{option.label}</Badge>
+                          <Badge key={typeId} variant="secondary">{option.name}</Badge>
                         ) : null;
                       })
                     ) : (
