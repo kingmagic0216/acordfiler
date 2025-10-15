@@ -21,13 +21,19 @@ const CustomerIntake = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submissionResult, setSubmissionResult] = useState<{ success: boolean; submissionId?: string; error?: string } | null>(null);
   const [formData, setFormData] = useState({
+    // Step 1: Location & Coverage Type
+    zipCode: "",
+    insuranceType: "" as "personal" | "business" | "both" | "",
+    // Step 2: Client Type
     clientType: "" as ClientType | "",
+    // Business fields
     businessName: "",
     federalId: "",
     businessType: "",
     yearsInBusiness: "",
     description: "",
     website: "",
+    // Contact fields
     contactName: "",
     email: "",
     phone: "",
@@ -52,18 +58,20 @@ const CustomerIntake = () => {
   const getStepTitle = (stepNumber: number) => {
     switch (stepNumber) {
       case 1:
-        return "Client Type";
+        return "Location & Coverage Type";
       case 2:
-        return "Coverage Needs";
+        return "Client Type";
       case 3:
-        return "Coverage Questions";
+        return "Coverage Needs";
       case 4:
+        return "Coverage Questions";
+      case 5:
         if (formData.clientType === 'personal') return "Personal Information";
         if (formData.clientType === 'business') return "Business Information";
         return "Personal & Business Information";
-      case 5:
-        return "Contact Details";
       case 6:
+        return "Contact Details";
+      case 7:
         return "Review & Submit";
       default:
         return "Step";
@@ -73,18 +81,20 @@ const CustomerIntake = () => {
   const getStepDescription = (stepNumber: number) => {
     switch (stepNumber) {
       case 1:
-        return "Are you applying for personal or business insurance?";
+        return "Let's start with your location and what type of insurance you need";
       case 2:
-        return "What coverage do you need?";
+        return "Are you applying for personal or business insurance?";
       case 3:
-        return "Answer coverage-specific questions";
+        return "What coverage do you need?";
       case 4:
+        return "Answer coverage-specific questions";
+      case 5:
         if (formData.clientType === 'personal') return "Tell us about yourself";
         if (formData.clientType === 'business') return "Tell us about your business";
         return "Tell us about yourself and your business";
-      case 5:
-        return "How can we reach you?";
       case 6:
+        return "How can we reach you?";
+      case 7:
         return "Confirm your information";
       default:
         return "";
@@ -230,13 +240,125 @@ const CustomerIntake = () => {
   const renderStepContent = () => {
     switch (currentStep) {
       case 1:
+        // Step 1: Location & Coverage Type (GEICO/Progressive/State Farm style)
         return (
           <div className="space-y-6">
             <div>
-              <h3 className="text-lg font-semibold mb-4">What type of insurance are you looking for?</h3>
-            <p className="text-gray-600 mb-6">
-              This helps us provide the right coverage options and questions for your needs.
-            </p>
+              <h3 className="text-lg font-semibold mb-4">Let's get started!</h3>
+              <p className="text-gray-600 mb-6">
+                We'll help you find the right insurance coverage. Let's start with your location and what type of insurance you need.
+              </p>
+              
+              {/* ZIP Code Input */}
+              <div className="mb-6">
+                <Label htmlFor="zipCode" className="text-sm font-medium mb-2 block">
+                  ZIP Code *
+                </Label>
+                <Input
+                  id="zipCode"
+                  value={formData.zipCode}
+                  onChange={(e) => setFormData(prev => ({ ...prev, zipCode: e.target.value }))}
+                  placeholder="Enter your 5-digit ZIP code"
+                  className="max-w-xs"
+                  maxLength={5}
+                />
+                <p className="text-xs text-gray-500 mt-1">
+                  This helps us provide accurate rates for your area
+                </p>
+              </div>
+
+              {/* Insurance Type Selection */}
+              <div className="mb-6">
+                <Label className="text-sm font-medium mb-4 block">
+                  What type of insurance are you looking for? *
+                </Label>
+                <div className="grid md:grid-cols-3 gap-4">
+                  <Card 
+                    className={`p-6 cursor-pointer transition-all ${
+                      formData.insuranceType === 'personal' 
+                        ? 'ring-2 ring-insurance-blue bg-insurance-blue/5' 
+                        : 'hover:bg-muted/50'
+                    }`}
+                    onClick={() => setFormData(prev => ({ ...prev, insuranceType: 'personal' }))}
+                  >
+                    <div className="text-center">
+                      <div className="h-12 w-12 rounded-lg bg-blue-100 flex items-center justify-center mx-auto mb-3">
+                        <UserIcon className="h-6 w-6 text-blue-600" />
+                      </div>
+                      <h4 className="font-semibold mb-2">Personal Insurance</h4>
+                      <p className="text-sm text-muted-foreground">
+                        Auto, Home, Personal Liability, and other personal coverage
+                      </p>
+                    </div>
+                  </Card>
+
+                  <Card 
+                    className={`p-6 cursor-pointer transition-all ${
+                      formData.insuranceType === 'business' 
+                        ? 'ring-2 ring-insurance-blue bg-insurance-blue/5' 
+                        : 'hover:bg-muted/50'
+                    }`}
+                    onClick={() => setFormData(prev => ({ ...prev, insuranceType: 'business' }))}
+                  >
+                    <div className="text-center">
+                      <div className="h-12 w-12 rounded-lg bg-green-100 flex items-center justify-center mx-auto mb-3">
+                        <Building2 className="h-6 w-6 text-green-600" />
+                      </div>
+                      <h4 className="font-semibold mb-2">Business Insurance</h4>
+                      <p className="text-sm text-muted-foreground">
+                        General Liability, Commercial Auto, Workers Comp, and more
+                      </p>
+                    </div>
+                  </Card>
+
+                  <Card 
+                    className={`p-6 cursor-pointer transition-all ${
+                      formData.insuranceType === 'both' 
+                        ? 'ring-2 ring-insurance-blue bg-insurance-blue/5' 
+                        : 'hover:bg-muted/50'
+                    }`}
+                    onClick={() => setFormData(prev => ({ ...prev, insuranceType: 'both' }))}
+                  >
+                    <div className="text-center">
+                      <div className="h-12 w-12 rounded-lg bg-purple-100 flex items-center justify-center mx-auto mb-3">
+                        <Shield className="h-6 w-6 text-purple-600" />
+                      </div>
+                      <h4 className="font-semibold mb-2">Both Personal & Business</h4>
+                      <p className="text-sm text-muted-foreground">
+                        Comprehensive coverage for both personal and business needs
+                      </p>
+                    </div>
+                  </Card>
+                </div>
+              </div>
+
+              {/* Social Proof (Progressive style) */}
+              <Card className="p-4 bg-blue-50 border-blue-200">
+                <div className="flex items-start space-x-3">
+                  <div className="h-5 w-5 rounded-full bg-blue-100 flex items-center justify-center mt-0.5">
+                    <span className="text-blue-600 text-xs">ℹ</span>
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-blue-900 mb-1">Join thousands of satisfied customers</h4>
+                    <p className="text-sm text-blue-700">
+                      Over 15,000 businesses and individuals have streamlined their insurance applications with our platform this year.
+                    </p>
+                  </div>
+                </div>
+              </Card>
+            </div>
+          </div>
+        );
+
+      case 2:
+        // Step 2: Client Type (moved from old case 1)
+        return (
+          <div className="space-y-6">
+            <div>
+              <h3 className="text-lg font-semibold mb-4">Tell us about yourself</h3>
+              <p className="text-gray-600 mb-6">
+                Are you applying for personal or business insurance? This helps us provide the right coverage options and questions for your needs.
+              </p>
               
               <div className="grid md:grid-cols-3 gap-4">
                 <Card 
@@ -300,8 +422,8 @@ const CustomerIntake = () => {
           </div>
         );
 
-      case 2:
-        // Coverage Needs Selection - GEICO Style
+      case 3:
+        // Step 3: Coverage Needs Selection (moved from old case 2)
         const coverageCategories = coverageQuestionsService.getCoverageTypesByCategory(formData.clientType);
         
         return (
@@ -372,8 +494,8 @@ const CustomerIntake = () => {
           </div>
         );
 
-      case 3:
-        // Coverage Questions - Dynamic questions based on selected coverage types
+      case 4:
+        // Step 4: Coverage Questions (moved from old case 3)
         const selectedCoverageQuestions = coverageQuestionsService.getQuestionsForCoverages(
           formData.coverageTypes, 
           formData.clientType
@@ -390,7 +512,7 @@ const CustomerIntake = () => {
                 <p className="text-gray-600 mb-4">
                   Please go back and select at least one type of coverage to continue.
                 </p>
-                <Button variant="outline" onClick={() => setCurrentStep(2)}>
+                <Button variant="outline" onClick={() => setCurrentStep(3)}>
                   <ArrowLeft className="mr-2 h-4 w-4" />
                   Back to Coverage Selection
                 </Button>
@@ -525,8 +647,8 @@ const CustomerIntake = () => {
           </div>
         );
 
-      case 4:
-        // Personal/Business Information - Based on client type and coverage needs
+      case 5:
+        // Step 5: Personal/Business Information (moved from old case 4)
         if (formData.clientType === 'personal') {
           return (
             <div className="space-y-6">
@@ -834,8 +956,8 @@ const CustomerIntake = () => {
           );
         }
 
-      case 5:
-        // Contact Details - Universal contact information
+      case 6:
+        // Step 6: Contact Details (moved from old case 5)
         return (
           <div className="space-y-6">
             <div>
@@ -929,7 +1051,8 @@ const CustomerIntake = () => {
           </div>
         );
 
-      case 6:
+      case 7:
+        // Step 7: Review & Submit (moved from old case 6)
         return (
           <div className="space-y-6">
             <div className="text-center mb-6">
@@ -1009,6 +1132,26 @@ const CustomerIntake = () => {
                 </Card>
               )}
             </div>
+
+            {submissionResult && (
+              <Card className={submissionResult.success ? "border-status-approved" : "border-status-rejected"}>
+                <CardContent className="pt-6">
+                  <div className="flex items-center space-x-2">
+                    {submissionResult.success ? (
+                      <CheckCircle className="h-5 w-5 text-status-approved" />
+                    ) : (
+                      <XCircle className="h-5 w-5 text-status-rejected" />
+                    )}
+                    <p className={submissionResult.success ? "text-status-approved" : "text-status-rejected"}>
+                      {submissionResult.success 
+                        ? `Application submitted successfully! Submission ID: ${submissionResult.submissionId}`
+                        : `Error: ${submissionResult.error}`
+                      }
+                    </p>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
           </div>
         );
 
