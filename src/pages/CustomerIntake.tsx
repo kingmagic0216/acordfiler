@@ -36,6 +36,11 @@ const CustomerIntake = () => {
     state: "",
     zip: "",
     coverageTypes: [] as string[],
+    // Personal fields
+    dateOfBirth: "",
+    ssn: "",
+    occupation: "",
+    employer: "",
   });
   const [coverageQuestions, setCoverageQuestions] = useState<CoverageQuestion[]>([]);
   const [coverageResponses, setCoverageResponses] = useState<Record<string, any>>({});
@@ -44,13 +49,55 @@ const CustomerIntake = () => {
   const totalSteps = 6;
   const progress = (currentStep / totalSteps) * 100;
 
+  const getStepTitle = (stepNumber: number) => {
+    switch (stepNumber) {
+      case 1:
+        return "Client Type";
+      case 2:
+        if (formData.clientType === 'personal') return "Personal Information";
+        if (formData.clientType === 'business') return "Business Information";
+        return "Personal & Business Information";
+      case 3:
+        return "Contact Details";
+      case 4:
+        return "Coverage Needs";
+      case 5:
+        return "Coverage Questions";
+      case 6:
+        return "Review & Submit";
+      default:
+        return "Step";
+    }
+  };
+
+  const getStepDescription = (stepNumber: number) => {
+    switch (stepNumber) {
+      case 1:
+        return "Are you applying for personal or business insurance?";
+      case 2:
+        if (formData.clientType === 'personal') return "Tell us about yourself";
+        if (formData.clientType === 'business') return "Tell us about your business";
+        return "Tell us about yourself and your business";
+      case 3:
+        return "How can we reach you?";
+      case 4:
+        return "What coverage do you need?";
+      case 5:
+        return "Answer coverage-specific questions";
+      case 6:
+        return "Confirm your information";
+      default:
+        return "";
+    }
+  };
+
   const steps = [
-    { number: 1, title: "Client Type", description: "Are you applying for personal or business insurance?" },
-    { number: 2, title: "Business Information", description: "Tell us about your business" },
-    { number: 3, title: "Contact Details", description: "How can we reach you?" },
-    { number: 4, title: "Coverage Needs", description: "What coverage do you need?" },
-    { number: 5, title: "Coverage Questions", description: "Answer coverage-specific questions" },
-    { number: 6, title: "Review & Submit", description: "Confirm your information" },
+    { number: 1, title: getStepTitle(1), description: getStepDescription(1) },
+    { number: 2, title: getStepTitle(2), description: getStepDescription(2) },
+    { number: 3, title: getStepTitle(3), description: getStepDescription(3) },
+    { number: 4, title: getStepTitle(4), description: getStepDescription(4) },
+    { number: 5, title: getStepTitle(5), description: getStepDescription(5) },
+    { number: 6, title: getStepTitle(6), description: getStepDescription(6) },
   ];
 
   const getCoverageOptions = () => {
@@ -254,78 +301,302 @@ const CustomerIntake = () => {
         );
 
       case 2:
-        return (
-          <div className="space-y-6">
-            <div className="grid md:grid-cols-2 gap-4">
+        // Show different forms based on client type
+        if (formData.clientType === 'personal') {
+          return (
+            <div className="space-y-6">
+              <div className="grid md:grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="firstName">First Name *</Label>
+                  <Input 
+                    id="firstName" 
+                    value={formData.contactName.split(' ')[0] || ''}
+                    onChange={(e) => {
+                      const lastName = formData.contactName.split(' ').slice(1).join(' ');
+                      setFormData(prev => ({ ...prev, contactName: `${e.target.value} ${lastName}`.trim() }));
+                    }}
+                    placeholder="Enter your first name" 
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="lastName">Last Name *</Label>
+                  <Input 
+                    id="lastName" 
+                    value={formData.contactName.split(' ').slice(1).join(' ') || ''}
+                    onChange={(e) => {
+                      const firstName = formData.contactName.split(' ')[0] || '';
+                      setFormData(prev => ({ ...prev, contactName: `${firstName} ${e.target.value}`.trim() }));
+                    }}
+                    placeholder="Enter your last name" 
+                  />
+                </div>
+              </div>
+
+              <div className="grid md:grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="dateOfBirth">Date of Birth *</Label>
+                  <Input 
+                    id="dateOfBirth" 
+                    type="date"
+                    value={formData.dateOfBirth || ''}
+                    onChange={(e) => setFormData(prev => ({ ...prev, dateOfBirth: e.target.value }))}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="ssn">Social Security Number *</Label>
+                  <Input 
+                    id="ssn" 
+                    value={formData.ssn || ''}
+                    onChange={(e) => setFormData(prev => ({ ...prev, ssn: e.target.value }))}
+                    placeholder="XXX-XX-XXXX" 
+                  />
+                </div>
+              </div>
+
               <div>
-                <Label htmlFor="businessName">Business Name *</Label>
+                <Label htmlFor="occupation">Occupation *</Label>
                 <Input 
-                  id="businessName" 
-                  value={formData.businessName}
-                  onChange={(e) => setFormData(prev => ({ ...prev, businessName: e.target.value }))}
-                  placeholder="Enter your business name" 
+                  id="occupation" 
+                  value={formData.occupation || ''}
+                  onChange={(e) => setFormData(prev => ({ ...prev, occupation: e.target.value }))}
+                  placeholder="Enter your occupation" 
                 />
               </div>
+
               <div>
-                <Label htmlFor="federalId">Federal ID/EIN *</Label>
+                <Label htmlFor="employer">Employer</Label>
                 <Input 
-                  id="federalId" 
-                  value={formData.federalId}
-                  onChange={(e) => setFormData(prev => ({ ...prev, federalId: e.target.value }))}
-                  placeholder="XX-XXXXXXX" 
+                  id="employer" 
+                  value={formData.employer || ''}
+                  onChange={(e) => setFormData(prev => ({ ...prev, employer: e.target.value }))}
+                  placeholder="Enter your employer name" 
                 />
               </div>
             </div>
-
-            <div className="grid md:grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="businessType">Business Type *</Label>
-                <Select value={formData.businessType} onValueChange={(value) => setFormData(prev => ({ ...prev, businessType: value }))}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select business type" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="corporation">Corporation</SelectItem>
-                    <SelectItem value="llc">LLC</SelectItem>
-                    <SelectItem value="partnership">Partnership</SelectItem>
-                    <SelectItem value="sole-proprietorship">Sole Proprietorship</SelectItem>
-                  </SelectContent>
-                </Select>
+          );
+        } else if (formData.clientType === 'business') {
+          return (
+            <div className="space-y-6">
+              <div className="grid md:grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="businessName">Business Name *</Label>
+                  <Input 
+                    id="businessName" 
+                    value={formData.businessName}
+                    onChange={(e) => setFormData(prev => ({ ...prev, businessName: e.target.value }))}
+                    placeholder="Enter your business name" 
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="federalId">Federal ID/EIN *</Label>
+                  <Input 
+                    id="federalId" 
+                    value={formData.federalId}
+                    onChange={(e) => setFormData(prev => ({ ...prev, federalId: e.target.value }))}
+                    placeholder="XX-XXXXXXX" 
+                  />
+                </div>
               </div>
+
+              <div className="grid md:grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="businessType">Business Type *</Label>
+                  <Select value={formData.businessType} onValueChange={(value) => setFormData(prev => ({ ...prev, businessType: value }))}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select business type" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="corporation">Corporation</SelectItem>
+                      <SelectItem value="llc">LLC</SelectItem>
+                      <SelectItem value="partnership">Partnership</SelectItem>
+                      <SelectItem value="sole-proprietorship">Sole Proprietorship</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label htmlFor="yearsInBusiness">Years in Business *</Label>
+                  <Input 
+                    id="yearsInBusiness" 
+                    type="number"
+                    value={formData.yearsInBusiness}
+                    onChange={(e) => setFormData(prev => ({ ...prev, yearsInBusiness: e.target.value }))}
+                    placeholder="0" 
+                  />
+                </div>
+              </div>
+
               <div>
-                <Label htmlFor="yearsInBusiness">Years in Business *</Label>
+                <Label htmlFor="description">Business Description *</Label>
+                <Textarea 
+                  id="description" 
+                  value={formData.description}
+                  onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+                  placeholder="Describe your business operations, products, and services"
+                  rows={3}
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="website">Website</Label>
                 <Input 
-                  id="yearsInBusiness" 
-                  type="number"
-                  value={formData.yearsInBusiness}
-                  onChange={(e) => setFormData(prev => ({ ...prev, yearsInBusiness: e.target.value }))}
-                  placeholder="0" 
+                  id="website" 
+                  value={formData.website}
+                  onChange={(e) => setFormData(prev => ({ ...prev, website: e.target.value }))}
+                  placeholder="https://www.example.com" 
                 />
               </div>
             </div>
+          );
+        } else {
+          // Both personal and business
+          return (
+            <div className="space-y-6">
+              <div className="space-y-4">
+                <h4 className="text-lg font-semibold">Personal Information</h4>
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="firstName">First Name *</Label>
+                    <Input 
+                      id="firstName" 
+                      value={formData.contactName.split(' ')[0] || ''}
+                      onChange={(e) => {
+                        const lastName = formData.contactName.split(' ').slice(1).join(' ');
+                        setFormData(prev => ({ ...prev, contactName: `${e.target.value} ${lastName}`.trim() }));
+                      }}
+                      placeholder="Enter your first name" 
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="lastName">Last Name *</Label>
+                    <Input 
+                      id="lastName" 
+                      value={formData.contactName.split(' ').slice(1).join(' ') || ''}
+                      onChange={(e) => {
+                        const firstName = formData.contactName.split(' ')[0] || '';
+                        setFormData(prev => ({ ...prev, contactName: `${firstName} ${e.target.value}`.trim() }));
+                      }}
+                      placeholder="Enter your last name" 
+                    />
+                  </div>
+                </div>
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="dateOfBirth">Date of Birth *</Label>
+                    <Input 
+                      id="dateOfBirth" 
+                      type="date"
+                      value={formData.dateOfBirth || ''}
+                      onChange={(e) => setFormData(prev => ({ ...prev, dateOfBirth: e.target.value }))}
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="ssn">Social Security Number *</Label>
+                    <Input 
+                      id="ssn" 
+                      value={formData.ssn || ''}
+                      onChange={(e) => setFormData(prev => ({ ...prev, ssn: e.target.value }))}
+                      placeholder="XXX-XX-XXXX" 
+                    />
+                  </div>
+                </div>
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="occupation">Occupation *</Label>
+                    <Input 
+                      id="occupation" 
+                      value={formData.occupation || ''}
+                      onChange={(e) => setFormData(prev => ({ ...prev, occupation: e.target.value }))}
+                      placeholder="Enter your occupation" 
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="employer">Employer</Label>
+                    <Input 
+                      id="employer" 
+                      value={formData.employer || ''}
+                      onChange={(e) => setFormData(prev => ({ ...prev, employer: e.target.value }))}
+                      placeholder="Enter your employer name" 
+                    />
+                  </div>
+                </div>
+              </div>
 
-            <div>
-              <Label htmlFor="description">Business Description *</Label>
-              <Textarea 
-                id="description" 
-                value={formData.description}
-                onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-                placeholder="Describe your business operations, products, and services"
-                rows={4}
-              />
-            </div>
+              <Separator />
 
-            <div>
-              <Label htmlFor="website">Website</Label>
-              <Input 
-                id="website" 
-                value={formData.website}
-                onChange={(e) => setFormData(prev => ({ ...prev, website: e.target.value }))}
-                placeholder="https://www.example.com" 
-              />
+              <div className="space-y-4">
+                <h4 className="text-lg font-semibold">Business Information</h4>
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="businessName">Business Name *</Label>
+                    <Input 
+                      id="businessName" 
+                      value={formData.businessName}
+                      onChange={(e) => setFormData(prev => ({ ...prev, businessName: e.target.value }))}
+                      placeholder="Enter your business name" 
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="federalId">Federal ID/EIN *</Label>
+                    <Input 
+                      id="federalId" 
+                      value={formData.federalId}
+                      onChange={(e) => setFormData(prev => ({ ...prev, federalId: e.target.value }))}
+                      placeholder="XX-XXXXXXX" 
+                    />
+                  </div>
+                </div>
+
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="businessType">Business Type *</Label>
+                    <Select value={formData.businessType} onValueChange={(value) => setFormData(prev => ({ ...prev, businessType: value }))}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select business type" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="corporation">Corporation</SelectItem>
+                        <SelectItem value="llc">LLC</SelectItem>
+                        <SelectItem value="partnership">Partnership</SelectItem>
+                        <SelectItem value="sole-proprietorship">Sole Proprietorship</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label htmlFor="yearsInBusiness">Years in Business *</Label>
+                    <Input 
+                      id="yearsInBusiness" 
+                      type="number"
+                      value={formData.yearsInBusiness}
+                      onChange={(e) => setFormData(prev => ({ ...prev, yearsInBusiness: e.target.value }))}
+                      placeholder="0" 
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <Label htmlFor="description">Business Description *</Label>
+                  <Textarea 
+                    id="description" 
+                    value={formData.description}
+                    onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+                    placeholder="Describe your business operations, products, and services"
+                    rows={3}
+                  />
+                </div>
+
+                <div>
+                  <Label htmlFor="website">Website</Label>
+                  <Input 
+                    id="website" 
+                    value={formData.website}
+                    onChange={(e) => setFormData(prev => ({ ...prev, website: e.target.value }))}
+                    placeholder="https://www.example.com" 
+                  />
+                </div>
+              </div>
             </div>
-          </div>
-        );
+          );
+        }
 
       case 3:
         return (
