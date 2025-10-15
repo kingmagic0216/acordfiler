@@ -681,7 +681,7 @@ const CustomerIntake = () => {
           </div>
         );
 
-      case 3:
+      case 4:
         return (
           <div className="space-y-6">
             <div>
