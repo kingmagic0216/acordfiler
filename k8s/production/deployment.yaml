@@ -1,0 +1,188 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: acord-intake-platform
+  labels:
+    app: acord-intake-platform
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: acord-intake-platform
+  template:
+    metadata:
+      labels:
+        app: acord-intake-platform
+    spec:
+      containers:
+      - name: acord-intake-platform
+        image: ghcr.io/kingmagic0216/acordfiler:latest
+        ports:
+        - containerPort: 80
+        - containerPort: 3001
+        env:
+        - name: NODE_ENV
+          value: "production"
+        - name: DATABASE_URL
+          valueFrom:
+            secretKeyRef:
+              name: acord-secrets
+              key: database-url
+        - name: REDIS_URL
+          valueFrom:
+            secretKeyRef:
+              name: acord-secrets
+              key: redis-url
+        - name: JWT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: acord-secrets
+              key: jwt-secret
+        - name: EMAIL_SERVICE_KEY
+          valueFrom:
+            secretKeyRef:
+              name: acord-secrets
+              key: email-service-key
+        - name: DOCUSIGN_CLIENT_ID
+          valueFrom:
+            secretKeyRef:
+              name: acord-secrets
+              key: docusign-client-id
+        - name: DOCUSIGN_CLIENT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: acord-secrets
+              key: docusign-client-secret
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "250m"
+          limits:
+            memory: "1Gi"
+            cpu: "500m"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 3001
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 3001
+          initialDelaySeconds: 5
+          periodSeconds: 5
+        volumeMounts:
+        - name: uploads
+          mountPath: /app/uploads
+        - name: logs
+          mountPath: /app/logs
+      volumes:
+      - name: uploads
+        persistentVolumeClaim:
+          claimName: acord-uploads-pvc
+      - name: logs
+        persistentVolumeClaim:
+          claimName: acord-logs-pvc
+      imagePullSecrets:
+      - name: ghcr-secret
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: acord-intake-platform-service
+spec:
+  selector:
+    app: acord-intake-platform
+  ports:
+  - name: http
+    port: 80
+    targetPort: 80
+  - name: api
+    port: 3001
+    targetPort: 3001
+  type: ClusterIP
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: acord-intake-platform-ingress
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/rate-limit: "100"
+    nginx.ingress.kubernetes.io/rate-limit-window: "1m"
+spec:
+  tls:
+  - hosts:
+    - acordintake.com
+    - www.acordintake.com
+    secretName: acord-intake-platform-tls
+  rules:
+  - host: acordintake.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: acord-intake-platform-service
+            port:
+              number: 80
+  - host: www.acordintake.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: acord-intake-platform-service
+            port:
+              number: 80
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: acord-uploads-pvc
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 10Gi
+  storageClassName: fast-ssd
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: acord-logs-pvc
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 5Gi
+  storageClassName: standard
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: acord-secrets
+type: Opaque
+data:
+  database-url: <base64-encoded-database-url>
+  redis-url: <base64-encoded-redis-url>
+  jwt-secret: <base64-encoded-jwt-secret>
+  email-service-key: <base64-encoded-email-key>
+  docusign-client-id: <base64-encoded-docusign-client-id>
+  docusign-client-secret: <base64-encoded-docusign-client-secret>
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: ghcr-secret
+type: kubernetes.io/dockerconfigjson
+data:
+  .dockerconfigjson: <base64-encoded-docker-config>
