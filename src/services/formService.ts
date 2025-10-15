@@ -220,6 +220,49 @@ class FormService {
         priority: 'high',
         submittedAt: new Date(Date.now() - 3 * 60 * 60 * 1000), // 3 hours ago
         brokerId: 'broker-001'
+      },
+      {
+        id: 'SUB-006',
+        businessInfo: {
+          name: 'TechFlow Solutions LLC',
+          federalId: '12-3456789',
+          businessType: 'LLC',
+          yearsInBusiness: 8,
+          description: 'Technology consulting firm specializing in custom software development, mobile applications, and IT consulting services for small to medium businesses.',
+          website: 'https://www.techflowsolutions.com'
+        },
+        contactInfo: {
+          contactName: 'John Smith',
+          email: 'john.smith@techflowsolutions.com',
+          phone: '(555) 123-4567',
+          address: '1234 Technology Drive',
+          city: 'Los Angeles',
+          state: 'CA',
+          zipCode: '90210'
+        },
+        coverageInfo: {
+          coverageTypes: ['General Liability', 'Property Insurance'],
+          coverageResponses: {
+            'generalLiabilityLimit': '$1,000,000',
+            'businessOperations': 'Technology consulting firm specializing in custom software development',
+            'employeeCount': '15',
+            'annualRevenue': '$500,000-$1,000,000',
+            'businessLocationCount': '1',
+            'productsCompletedOperations': 'Yes',
+            'businessPropertyValue': '$100,000-$250,000',
+            'propertyType': 'Owned Building',
+            'inventoryValue': 'Under $25,000',
+            'buildingDescription': 'Modern office building, 2-story, concrete construction',
+            'propertyAddress': '1234 Technology Drive, Los Angeles, CA 90210',
+            'propertyCounty': 'Los Angeles County',
+            'hazardousMaterials': 'No',
+            'athleticTeams': 'No'
+          }
+        },
+        status: 'new',
+        priority: 'high',
+        submittedAt: new Date(), // Just submitted
+        brokerId: 'broker-001'
       }
     ];
 
@@ -227,7 +270,7 @@ class FormService {
     const existingData = localStorage.getItem('acord_submissions');
     if (!existingData) {
       this.submissions = demoSubmissions;
-      this.nextId = 6; // Start next ID after demo data
+      this.nextId = 7; // Start next ID after demo data (SUB-006 is the last demo)
       this.saveToStorage();
     }
   }

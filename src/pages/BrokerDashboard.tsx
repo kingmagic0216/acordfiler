@@ -33,6 +33,7 @@ import { pdfService } from "@/services/pdfService";
 import { authService, User as AuthUser } from "@/services/authService";
 import ViewSubmissionModal from "@/components/ViewSubmissionModal";
 import EditSubmissionModal from "@/components/EditSubmissionModal";
+import PreviewModal from "@/components/PreviewModal";
 
 const BrokerDashboard = () => {
   const navigate = useNavigate();
@@ -46,6 +47,8 @@ const BrokerDashboard = () => {
   const [viewModalOpen, setViewModalOpen] = useState(false);
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [selectedSubmission, setSelectedSubmission] = useState<FormSubmission | null>(null);
+  const [previewModalOpen, setPreviewModalOpen] = useState(false);
+  const [previewData, setPreviewData] = useState<{submission: FormSubmission, formType: string, pdfBlob: Blob} | null>(null);
 
   // Initialize auth service
   useEffect(() => {
@@ -217,7 +220,7 @@ const BrokerDashboard = () => {
     }
   };
 
-  // Generate ACORD form PDF
+  // Generate ACORD form PDF with preview
   const handleGenerateACORD = async (submissionId: string, formType: string) => {
     setIsGeneratingPDF(submissionId);
     try {
@@ -227,13 +230,30 @@ const BrokerDashboard = () => {
       }
 
       const pdfBlob = await pdfService.generateACORDPDF(submission, formType);
-      const filename = `${formType.replace(' ', '_')}_${submissionId}.pdf`;
-      await pdfService.downloadPDF(pdfBlob, filename);
+      
+      // Show preview modal instead of direct download
+      setPreviewData({ submission, formType, pdfBlob });
+      setPreviewModalOpen(true);
     } catch (error) {
       console.error('Failed to generate ACORD PDF:', error);
       alert('Failed to generate PDF. Please try again.');
     } finally {
       setIsGeneratingPDF(null);
+    }
+  };
+
+  // Handle download from preview
+  const handleDownloadFromPreview = async () => {
+    if (!previewData) return;
+    
+    try {
+      const filename = `${previewData.formType.replace(' ', '_')}_${previewData.submission.id}.pdf`;
+      await pdfService.downloadPDF(previewData.pdfBlob, filename);
+      setPreviewModalOpen(false);
+      setPreviewData(null);
+    } catch (error) {
+      console.error('Failed to download PDF:', error);
+      alert('Failed to download PDF. Please try again.');
     }
   };
 
@@ -567,6 +587,15 @@ const BrokerDashboard = () => {
         onClose={handleCloseModals}
         submission={selectedSubmission}
         onSave={handleSaveSubmission}
+      />
+      <PreviewModal
+        isOpen={previewModalOpen}
+        onClose={() => {
+          setPreviewModalOpen(false);
+          setPreviewData(null);
+        }}
+        previewData={previewData}
+        onDownload={handleDownloadFromPreview}
       />
     </div>
   );
