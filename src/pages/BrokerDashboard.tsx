@@ -581,6 +581,7 @@ const BrokerDashboard = () => {
         submission={selectedSubmission}
         onEdit={handleEditSubmission}
         onGenerateCOI={handleGenerateCOI}
+        onGenerateACORD={handleGenerateACORD}
       />
       <EditSubmissionModal
         isOpen={editModalOpen}

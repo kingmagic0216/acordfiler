@@ -26,6 +26,7 @@ interface ViewSubmissionModalProps {
   submission: FormSubmission | null;
   onEdit?: (submission: FormSubmission) => void;
   onGenerateCOI?: (submissionId: string) => void;
+  onGenerateACORD?: (submissionId: string, formType: string) => void;
 }
 
 const ViewSubmissionModal = ({ 
@@ -33,7 +34,8 @@ const ViewSubmissionModal = ({
   onClose, 
   submission, 
   onEdit, 
-  onGenerateCOI 
+  onGenerateCOI,
+  onGenerateACORD
 }: ViewSubmissionModalProps) => {
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
   const [isGeneratingCOI, setIsGeneratingCOI] = useState(false);
@@ -41,16 +43,22 @@ const ViewSubmissionModal = ({
   if (!isOpen || !submission) return null;
 
   const handleGenerateACORD = async (formType: string) => {
-    setIsGeneratingPDF(true);
-    try {
-      const pdfBlob = await pdfService.generateACORDPDF(submission, formType);
-      const filename = `${formType.replace(' ', '_')}_${submission.id}.pdf`;
-      await pdfService.downloadPDF(pdfBlob, filename);
-    } catch (error) {
-      console.error('Failed to generate ACORD PDF:', error);
-      alert('Failed to generate PDF. Please try again.');
-    } finally {
-      setIsGeneratingPDF(false);
+    if (onGenerateACORD) {
+      // Use the preview functionality from parent component
+      onGenerateACORD(submission.id, formType);
+    } else {
+      // Fallback to direct download if no preview handler provided
+      setIsGeneratingPDF(true);
+      try {
+        const pdfBlob = await pdfService.generateACORDPDF(submission, formType);
+        const filename = `${formType.replace(' ', '_')}_${submission.id}.pdf`;
+        await pdfService.downloadPDF(pdfBlob, filename);
+      } catch (error) {
+        console.error('Failed to generate ACORD PDF:', error);
+        alert('Failed to generate PDF. Please try again.');
+      } finally {
+        setIsGeneratingPDF(false);
+      }
     }
   };
 
@@ -212,13 +220,30 @@ const ViewSubmissionModal = ({
               <Shield className="h-5 w-5 text-purple-600" />
               <h3 className="text-lg font-semibold">Coverage Needs</h3>
             </div>
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-wrap gap-2 mb-4">
               {submission.coverageInfo.coverageTypes.map((coverage, index) => (
                 <Badge key={index} variant="outline" className="text-sm">
                   {coverage}
                 </Badge>
               ))}
             </div>
+            
+            {/* Coverage Question Answers */}
+            {submission.coverageInfo.coverageResponses && Object.keys(submission.coverageInfo.coverageResponses).length > 0 && (
+              <div className="mt-4">
+                <h4 className="text-md font-medium text-gray-700 mb-3">Coverage Question Answers</h4>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  {Object.entries(submission.coverageInfo.coverageResponses).map(([question, answer]) => (
+                    <div key={question} className="bg-gray-50 p-3 rounded-lg">
+                      <label className="text-sm font-medium text-gray-600 capitalize">
+                        {question.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}
+                      </label>
+                      <p className="text-sm font-medium text-gray-900 mt-1">{answer}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
 
           <Separator />
