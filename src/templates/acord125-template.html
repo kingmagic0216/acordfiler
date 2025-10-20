@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>ACORD 125 - Commercial General Liability Application</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .form-header { text-align: center; border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 20px; }
+        .form-title { font-size: 18px; font-weight: bold; }
+        .section { margin: 20px 0; }
+        .section-title { font-weight: bold; background-color: #f0f0f0; padding: 5px; }
+        .field { margin: 5px 0; }
+        .label { font-weight: bold; display: inline-block; width: 200px; }
+        .value { display: inline-block; }
+        .checkbox { margin-right: 5px; }
+        .form-field { border: 1px solid #ccc; padding: 2px; margin: 2px; min-height: 20px; }
+    </style>
+</head>
+<body>
+    <div class="form-header">
+        <div class="form-title">ACORD 125 - COMMERCIAL GENERAL LIABILITY APPLICATION</div>
+        <div>APPLICANT INFORMATION SECTION</div>
+    </div>
+
+    <!-- Producer Information -->
+    <div class="section">
+        <div class="section-title">PRODUCER INFORMATION</div>
+        <div class="field">
+            <span class="label">Producer Name:</span>
+            <span class="form-field" id="Producer_FullName_A">{{producerName}}</span>
+        </div>
+        <div class="field">
+            <span class="label">Producer Address:</span>
+            <span class="form-field" id="Producer_MailingAddress_LineOne_A">{{producerAddress}}</span>
+        </div>
+        <div class="field">
+            <span class="label">Producer City:</span>
+            <span class="form-field" id="Producer_MailingAddress_CityName_A">{{producerCity}}</span>
+        </div>
+        <div class="field">
+            <span class="label">Producer State:</span>
+            <span class="form-field" id="Producer_MailingAddress_StateOrProvinceCode_A">{{producerState}}</span>
+        </div>
+        <div class="field">
+            <span class="label">Producer ZIP:</span>
+            <span class="form-field" id="Producer_MailingAddress_PostalCode_A">{{producerZip}}</span>
+        </div>
+        <div class="field">
+            <span class="label">Contact Person:</span>
+            <span class="form-field" id="Producer_ContactPerson_FullName_A">{{producerContact}}</span>
+        </div>
+        <div class="field">
+            <span class="label">Phone:</span>
+            <span class="form-field" id="Producer_ContactPerson_PhoneNumber_A">{{producerPhone}}</span>
+        </div>
+        <div class="field">
+            <span class="label">Email:</span>
+            <span class="form-field" id="Producer_ContactPerson_EmailAddress_A">{{producerEmail}}</span>
+        </div>
+    </div>
+
+    <!-- Insurer Information -->
+    <div class="section">
+        <div class="section-title">INSURER INFORMATION</div>
+        <div class="field">
+            <span class="label">Insurer Name:</span>
+            <span class="form-field" id="Insurer_FullName_A">{{insurerName}}</span>
+        </div>
+        <div class="field">
+            <span class="label">NAIC Code:</span>
+            <span class="form-field" id="Insurer_NAICCode_A">{{naicCode}}</span>
+        </div>
+        <div class="field">
+            <span class="label">Product Description:</span>
+            <span class="form-field" id="Insurer_ProductDescription_A">{{productDescription}}</span>
+        </div>
+        <div class="field">
+            <span class="label">Product Code:</span>
+            <span class="form-field" id="Insurer_ProductCode_A">{{productCode}}</span>
+        </div>
+        <div class="field">
+            <span class="label">Policy Number:</span>
+            <span class="form-field" id="Policy_PolicyNumberIdentifier_A">{{policyNumber}}</span>
+        </div>
+    </div>
+
+    <!-- Policy Status -->
+    <div class="section">
+        <div class="section-title">POLICY STATUS</div>
+        <div class="field">
+            <span class="label">Quote:</span>
+            <span class="checkbox">☐</span>
+            <span class="label">Issue Policy:</span>
+            <span class="checkbox">☐</span>
+            <span class="label">Renew:</span>
+            <span class="checkbox">☐</span>
+        </div>
+        <div class="field">
+            <span class="label">Bound:</span>
+            <span class="checkbox">☐</span>
+            <span class="label">Change:</span>
+            <span class="checkbox">☐</span>
+            <span class="label">Cancel:</span>
+            <span class="checkbox">☐</span>
+        </div>
+        <div class="field">
+            <span class="label">Effective Date:</span>
+            <span class="form-field" id="Policy_Status_EffectiveDate_A">{{effectiveDate}}</span>
+        </div>
+    </div>
+
+    <!-- Business Information -->
+    <div class="section">
+        <div class="section-title">BUSINESS INFORMATION</div>
+        <div class="field">
+            <span class="label">Business Name:</span>
+            <span class="form-field" id="CommercialPolicy_BusinessName_A">{{businessName}}</span>
+        </div>
+        <div class="field">
+            <span class="label">Business Address:</span>
+            <span class="form-field" id="CommercialPolicy_BusinessAddress_A">{{businessAddress}}</span>
+        </div>
+        <div class="field">
+            <span class="label">City:</span>
+            <span class="form-field" id="CommercialPolicy_BusinessCity_A">{{businessCity}}</span>
+        </div>
+        <div class="field">
+            <span class="label">State:</span>
+            <span class="form-field" id="CommercialPolicy_BusinessState_A">{{businessState}}</span>
+        </div>
+        <div class="field">
+            <span class="label">ZIP Code:</span>
+            <span class="form-field" id="CommercialPolicy_BusinessZip_A">{{businessZip}}</span>
+        </div>
+        <div class="field">
+            <span class="label">Federal Tax ID:</span>
+            <span class="form-field" id="CommercialPolicy_FederalTaxId_A">{{federalTaxId}}</span>
+        </div>
+        <div class="field">
+            <span class="label">Business Type:</span>
+            <span class="form-field" id="CommercialPolicy_BusinessType_A">{{businessType}}</span>
+        </div>
+        <div class="field">
+            <span class="label">Years in Business:</span>
+            <span class="form-field" id="CommercialPolicy_YearsInBusiness_A">{{yearsInBusiness}}</span>
+        </div>
+        <div class="field">
+            <span class="label">Website:</span>
+            <span class="form-field" id="CommercialPolicy_Website_A">{{website}}</span>
+        </div>
+    </div>
+
+    <!-- Contact Information -->
+    <div class="section">
+        <div class="section-title">CONTACT INFORMATION</div>
+        <div class="field">
+            <span class="label">Contact Name:</span>
+            <span class="form-field" id="CommercialPolicy_ContactName_A">{{contactName}}</span>
+        </div>
+        <div class="field">
+            <span class="label">Contact Email:</span>
+            <span class="form-field" id="CommercialPolicy_ContactEmail_A">{{contactEmail}}</span>
+        </div>
+        <div class="field">
+            <span class="label">Contact Phone:</span>
+            <span class="form-field" id="CommercialPolicy_ContactPhone_A">{{contactPhone}}</span>
+        </div>
+    </div>
+
+    <!-- Operations Description -->
+    <div class="section">
+        <div class="section-title">OPERATIONS DESCRIPTION</div>
+        <div class="field">
+            <span class="label">Business Description:</span>
+            <div class="form-field" id="CommercialPolicy_OperationsDescription_A" style="min-height: 100px;">{{businessDescription}}</div>
+        </div>
+    </div>
+
+    <!-- Coverage Information -->
+    <div class="section">
+        <div class="section-title">COVERAGE INFORMATION</div>
+        <div class="field">
+            <span class="label">Coverage Types:</span>
+            <span class="form-field" id="CommercialPolicy_CoverageTypes_A">{{coverageTypes}}</span>
+        </div>
+        <div class="field">
+            <span class="label">General Liability:</span>
+            <span class="checkbox">☐</span>
+            <span class="label">Premium Amount:</span>
+            <span class="form-field" id="GeneralLiabilityLineOfBusiness_TotalPremiumAmount_A">{{generalLiabilityPremium}}</span>
+        </div>
+    </div>
+
+    <!-- Form Completion -->
+    <div class="section">
+        <div class="section-title">FORM COMPLETION</div>
+        <div class="field">
+            <span class="label">Completion Date:</span>
+            <span class="form-field" id="Form_CompletionDate_A">{{completionDate}}</span>
+        </div>
+        <div class="field">
+            <span class="label">Form Edition:</span>
+            <span class="form-field" id="Form_EditionIdentifier_A">{{formEdition}}</span>
+        </div>
+    </div>
+</body>
+</html>
+

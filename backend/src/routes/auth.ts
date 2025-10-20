@@ -1,4 +1,4 @@
-import { Router } from 'express';
+import { Router, Request, Response } from 'express';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { body, validationResult } from 'express-validator';
@@ -26,7 +26,7 @@ const loginValidation = [
 ];
 
 // Register new user
-router.post('/register', rateLimitMiddleware, registerValidation, async (req, res) => {
+router.post('/register', rateLimitMiddleware, registerValidation, async (req: Request, res: Response) => {
   try {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -93,7 +93,7 @@ router.post('/register', rateLimitMiddleware, registerValidation, async (req, re
 });
 
 // Login user
-router.post('/login', rateLimitMiddleware, loginValidation, async (req, res) => {
+router.post('/login', rateLimitMiddleware, loginValidation, async (req: Request, res: Response) => {
   try {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {

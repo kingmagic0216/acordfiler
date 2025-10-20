@@ -1,7 +1,7 @@
 // PDF generation service for ACORD forms
 import { FormSubmission } from './formService';
 import { acordFormGenerator, CustomerData } from './acordFormGenerator';
-import { pdfGenerator } from './pdfGenerator';
+import { acordPDFFiller } from './acordPDFFiller';
 
 export interface PDFGenerationOptions {
   filename?: string;
@@ -10,7 +10,7 @@ export interface PDFGenerationOptions {
 }
 
 class PDFService {
-  // Generate PDF for ACORD form using proper ACORD form generation
+  // Generate PDF for ACORD form using the real ACORD PDF template
   async generateACORDPDF(
     submission: FormSubmission,
     formType: string,
@@ -19,18 +19,11 @@ class PDFService {
     // Convert FormSubmission to CustomerData format
     const customerData: CustomerData = this.convertSubmissionToCustomerData(submission);
     
-    // Generate ACORD forms using the proper generator
-    const acordForms = acordFormGenerator.generateACORDForms(customerData);
+    // Use the real ACORD PDF filler to fill the actual PDF form
+    const pdfBytes = await acordPDFFiller.fillACORD125(customerData);
     
-    // Find the specific form type requested
-    const requestedForm = acordForms.find(form => form.formType === formType);
-    
-    if (!requestedForm) {
-      throw new Error(`ACORD form ${formType} not found for this submission`);
-    }
-    
-    // Generate PDF using the proper PDF generator
-    return await pdfGenerator.generateACORDPDF(requestedForm);
+    // Convert to Blob for consistency with existing interface
+    return new Blob([pdfBytes], { type: 'application/pdf' });
   }
 
   // Convert FormSubmission to CustomerData format
@@ -99,7 +92,9 @@ class PDFService {
     const coiForm = acordForms.find(form => form.formType === 'ACORD 24');
     
     if (coiForm) {
-      return await pdfGenerator.generateACORDPDF(coiForm);
+      // Use the real ACORD PDF filler for COI
+      const pdfBytes = await acordPDFFiller.fillACORD125(customerData);
+      return new Blob([pdfBytes], { type: 'application/pdf' });
     } else {
       // Fallback to generic COI if ACORD 24 not available
       return this.createGenericCOI(submission);

@@ -6,7 +6,7 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "sqlite"
   url      = env("DATABASE_URL")
 }
 
@@ -17,8 +17,8 @@ model User {
   password  String
   firstName String
   lastName  String
-  role      UserRole @default(CUSTOMER)
-  status    UserStatus @default(ACTIVE)
+  role      String   @default("CUSTOMER") // ADMIN, BROKER, CUSTOMER
+  status    String   @default("ACTIVE")   // ACTIVE, INACTIVE, SUSPENDED, PENDING
   avatar    String?
   phone     String?
   timezone  String @default("UTC")
@@ -49,8 +49,8 @@ model Agency {
   primaryColor String @default("#1e3a8a")
   accentColor String @default("#3b82f6")
   
-  // Settings
-  settings    Json?
+  // Settings - stored as JSON string for SQLite
+  settings    String?
   
   // Timestamps
   createdAt   DateTime @default(now())
@@ -106,16 +106,16 @@ model Submission {
   state            String
   zipCode          String
   
-  // Coverage Information
-  coverageTypes    String[] // Array of coverage type IDs
-  coverageResponses Json?   // Dynamic coverage-specific responses
+  // Coverage Information - stored as JSON string for SQLite
+  coverageTypes    String // JSON string for SQLite compatibility
+  coverageResponses String?   // JSON string for SQLite compatibility
   
   // Client Type
-  clientType       ClientType @default(BUSINESS)
+  clientType       String @default("BUSINESS") // PERSONAL, BUSINESS, BOTH
   
   // Status and Priority
-  status          SubmissionStatus @default(NEW)
-  priority        Priority @default(MEDIUM)
+  status          String @default("NEW") // NEW, REVIEW, SIGNATURE, COMPLETED, REJECTED, CANCELLED
+  priority        String @default("MEDIUM") // LOW, MEDIUM, HIGH, URGENT
   
   // Assignment
   brokerId        String?
@@ -153,7 +153,7 @@ model Document {
   fileHash    String @unique
   
   // Document metadata
-  documentType DocumentType
+  documentType String // APPLICATION, CERTIFICATE, POLICY, INVOICE, OTHER
   description String?
   
   // Upload information
@@ -171,14 +171,14 @@ model AcordForm {
   id          String @id @default(cuid())
   submissionId String
   formType    String // ACORD 125, 126, 127, etc.
-  formData    Json   // Form-specific data
+  formData    String // JSON string for SQLite compatibility
   
   // Generation info
   generatedBy String
   generatedAt DateTime @default(now())
   
   // Status
-  status      AcordFormStatus @default(GENERATED)
+  status      String @default("GENERATED") // GENERATED, SIGNED, REJECTED, EXPIRED
   signedAt    DateTime?
   signedBy    String?
   
@@ -198,7 +198,7 @@ model FieldMapping {
   acordForm   String
   fieldName   String
   intakeField String
-  fieldType   FieldType
+  fieldType   String // TEXT, TEXTAREA, NUMBER, SELECT, CHECKBOX, DATE, EMAIL, PHONE
   required    Boolean @default(false)
   
   // Agency/Tenant
@@ -216,10 +216,10 @@ model FieldMapping {
 model Notification {
   id          String @id @default(cuid())
   userId      String
-  type        NotificationType
+  type        String // SUBMISSION_NEW, SUBMISSION_UPDATED, etc.
   title       String
   message     String
-  data        Json?
+  data        String? // JSON string for SQLite compatibility
   
   // Status
   read        Boolean @default(false)
@@ -243,7 +243,7 @@ model AuditLog {
   action      String
   resource    String
   resourceId  String?
-  details     Json?
+  details     String? // JSON string for SQLite compatibility
   ipAddress   String?
   userAgent   String?
   
@@ -262,7 +262,7 @@ model AuditLog {
 model SystemSetting {
   id          String @id @default(cuid())
   key         String @unique
-  value       Json
+  value       String // JSON string for SQLite compatibility
   description String?
   
   // Timestamps
@@ -271,76 +271,3 @@ model SystemSetting {
   
   @@map("system_settings")
 }
-
-// Enums
-enum UserRole {
-  ADMIN
-  BROKER
-  CUSTOMER
-}
-
-enum UserStatus {
-  ACTIVE
-  INACTIVE
-  SUSPENDED
-  PENDING
-}
-
-enum ClientType {
-  PERSONAL
-  BUSINESS
-  BOTH
-}
-
-enum SubmissionStatus {
-  NEW
-  REVIEW
-  SIGNATURE
-  COMPLETED
-  REJECTED
-  CANCELLED
-}
-
-enum Priority {
-  LOW
-  MEDIUM
-  HIGH
-  URGENT
-}
-
-enum DocumentType {
-  APPLICATION
-  CERTIFICATE
-  POLICY
-  INVOICE
-  OTHER
-}
-
-enum AcordFormStatus {
-  GENERATED
-  SIGNED
-  REJECTED
-  EXPIRED
-}
-
-enum FieldType {
-  TEXT
-  TEXTAREA
-  NUMBER
-  SELECT
-  CHECKBOX
-  DATE
-  EMAIL
-  PHONE
-}
-
-enum NotificationType {
-  SUBMISSION_NEW
-  SUBMISSION_UPDATED
-  SUBMISSION_COMPLETED
-  DOCUMENT_UPLOADED
-  FORM_GENERATED
-  SIGNATURE_REQUIRED
-  SYSTEM_ALERT
-}
-

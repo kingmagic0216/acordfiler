@@ -495,21 +495,21 @@ class CoverageQuestionsService {
         },
         {
           id: 'sic-code',
-          question: 'Do you know your SIC (Standard Industry Classification) code?',
+          question: 'What is your SIC (Standard Industry Classification) code?',
           type: 'text',
-          required: false,
+          required: true,
           placeholder: 'e.g., 5411 (Legal Services), 7372 (Software)',
           acordField: 'sic_code',
-          description: 'Standard Industry Classification code (optional)'
+          description: 'Standard Industry Classification code (required for ACORD forms)'
         },
         {
           id: 'naics-code',
-          question: 'Do you know your NAICS (North American Industry Classification) code?',
+          question: 'What is your NAICS (North American Industry Classification) code?',
           type: 'text',
-          required: false,
+          required: true,
           placeholder: 'e.g., 541110 (Offices of Lawyers), 541511 (Custom Computer Programming)',
           acordField: 'naics_code',
-          description: 'North American Industry Classification code (optional)'
+          description: 'North American Industry Classification code (required for ACORD forms)'
         },
         {
           id: 'employee-count',
@@ -546,7 +546,7 @@ class CoverageQuestionsService {
           options: ['Yes', 'No', 'Not Sure'],
           acordField: 'products_completed_operations',
           description: 'Coverage for products you make or work you complete'
-        }
+        },
       ]
     },
     {
@@ -750,6 +750,24 @@ class CoverageQuestionsService {
           options: ['$100,000', '$250,000', '$500,000', '$1,000,000', '$2,000,000+'],
           acordField: 'cyber_limit',
           description: 'Amount of cyber liability protection needed'
+        },
+        {
+          id: 'cyber-security-measures',
+          question: 'What cybersecurity measures do you have in place? (Select all that apply)',
+          type: 'checkbox',
+          required: true,
+          options: ['Firewall', 'Antivirus Software', 'Data Encryption', 'Regular Backups', 'Employee Training', 'Incident Response Plan', 'None'],
+          acordField: 'cyber_security_measures',
+          description: 'Current cybersecurity protections'
+        },
+        {
+          id: 'previous-data-breaches',
+          question: 'Have you experienced any data breaches in the past 3 years?',
+          type: 'select',
+          required: true,
+          options: ['No', 'Yes - Minor', 'Yes - Major', 'Prefer not to say'],
+          acordField: 'previous_breaches',
+          description: 'History of data security incidents'
         }
       ]
     },

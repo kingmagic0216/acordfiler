@@ -20,10 +20,7 @@ class PDFGenerator {
   }
 
   private generateFormHTML(form: ACORDForm): string {
-    const fields = form.fields.reduce((acc, field) => {
-      acc[field.fieldName] = String(field.value);
-      return acc;
-    }, {} as Record<string, string>);
+    const fields = form.fields;
 
     return `
 <!DOCTYPE html>
@@ -105,20 +102,62 @@ class PDFGenerator {
     </div>
 
     <div class="field-group">
-        <div class="field-group-title">Applicant Information</div>
-        ${this.generateFieldRow('Applicant Name', fields.applicant_name || fields.business_name, true)}
-        ${this.generateFieldRow('Address', fields.applicant_address || fields.business_address)}
-        ${this.generateFieldRow('City', fields.applicant_city || fields.business_city)}
-        ${this.generateFieldRow('State', fields.applicant_state || fields.business_state)}
-        ${this.generateFieldRow('ZIP Code', fields.applicant_zip || fields.business_zip)}
-        ${this.generateFieldRow('Phone', fields.contact_phone || fields.applicant_phone)}
-        ${this.generateFieldRow('Email', fields.contact_email || fields.applicant_email)}
+        <div class="field-group-title">Producer Information</div>
+        ${this.generateFieldRow('Producer Name', fields['Producer_FullName_A'])}
+        ${this.generateFieldRow('Producer Address', fields['Producer_MailingAddress_LineOne_A'])}
+        ${this.generateFieldRow('Producer City', fields['Producer_MailingAddress_CityName_A'])}
+        ${this.generateFieldRow('Producer State', fields['Producer_MailingAddress_StateOrProvinceCode_A'])}
+        ${this.generateFieldRow('Producer ZIP', fields['Producer_MailingAddress_PostalCode_A'])}
+        ${this.generateFieldRow('Contact Person', fields['Producer_ContactPerson_FullName_A'])}
+        ${this.generateFieldRow('Phone', fields['Producer_ContactPerson_PhoneNumber_A'])}
+        ${this.generateFieldRow('Email', fields['Producer_ContactPerson_EmailAddress_A'])}
     </div>
 
-    ${this.generateCoverageSection(form)}
-    ${this.generateVehicleSection(form)}
-    ${this.generateBusinessSection(form)}
-    ${this.generatePropertySection(form)}
+    <div class="field-group">
+        <div class="field-group-title">Insurer Information</div>
+        ${this.generateFieldRow('Insurer Name', fields['Insurer_FullName_A'])}
+        ${this.generateFieldRow('NAIC Code', fields['Insurer_NAICCode_A'])}
+        ${this.generateFieldRow('Product Description', fields['Insurer_ProductDescription_A'])}
+        ${this.generateFieldRow('Product Code', fields['Insurer_ProductCode_A'])}
+        ${this.generateFieldRow('Policy Number', fields['Policy_PolicyNumberIdentifier_A'])}
+    </div>
+
+    <div class="field-group">
+        <div class="field-group-title">Business Information</div>
+        ${this.generateFieldRow('Business Name', fields['CommercialPolicy_BusinessName_A'], true)}
+        ${this.generateFieldRow('Business Address', fields['CommercialPolicy_BusinessAddress_A'])}
+        ${this.generateFieldRow('City', fields['CommercialPolicy_BusinessCity_A'])}
+        ${this.generateFieldRow('State', fields['CommercialPolicy_BusinessState_A'])}
+        ${this.generateFieldRow('ZIP Code', fields['CommercialPolicy_BusinessZip_A'])}
+        ${this.generateFieldRow('Federal Tax ID', fields['CommercialPolicy_FederalTaxId_A'])}
+        ${this.generateFieldRow('Business Type', fields['CommercialPolicy_BusinessType_A'])}
+        ${this.generateFieldRow('Years in Business', fields['CommercialPolicy_YearsInBusiness_A'])}
+        ${this.generateFieldRow('Website', fields['CommercialPolicy_Website_A'])}
+    </div>
+
+    <div class="field-group">
+        <div class="field-group-title">Contact Information</div>
+        ${this.generateFieldRow('Contact Name', fields['CommercialPolicy_ContactName_A'])}
+        ${this.generateFieldRow('Contact Email', fields['CommercialPolicy_ContactEmail_A'])}
+        ${this.generateFieldRow('Contact Phone', fields['CommercialPolicy_ContactPhone_A'])}
+    </div>
+
+    <div class="field-group">
+        <div class="field-group-title">Operations Description</div>
+        ${this.generateFieldRow('Business Description', fields['CommercialPolicy_OperationsDescription_A'])}
+    </div>
+
+    <div class="field-group">
+        <div class="field-group-title">Coverage Information</div>
+        ${this.generateFieldRow('Coverage Types', fields['CommercialPolicy_CoverageTypes_A'])}
+        ${this.generateFieldRow('General Liability Premium', fields['GeneralLiabilityLineOfBusiness_TotalPremiumAmount_A'])}
+    </div>
+
+    <div class="field-group">
+        <div class="field-group-title">Form Completion</div>
+        ${this.generateFieldRow('Completion Date', fields['Form_CompletionDate_A'])}
+        ${this.generateFieldRow('Form Edition', fields['Form_EditionIdentifier_A'])}
+    </div>
 
     <div class="form-footer">
         <p>Generated on ${form.generatedAt.toLocaleString()}</p>
@@ -136,108 +175,6 @@ class PDFGenerator {
         <div class="field-label">${label}${required ? ' <span class="required">*</span>' : ''}:</div>
         <div class="field-value">${value}</div>
     </div>`;
-  }
-
-  private generateCoverageSection(form: ACORDForm): string {
-    const coverageFields = form.fields.filter(field => 
-      field.fieldName.includes('liability') || 
-      field.fieldName.includes('coverage') ||
-      field.fieldName.includes('limit')
-    );
-
-    if (coverageFields.length === 0) return '';
-
-    return `
-    <div class="field-group">
-        <div class="field-group-title">Coverage Information</div>
-        ${coverageFields.map(field => 
-          this.generateFieldRow(
-            this.formatFieldLabel(field.fieldName), 
-            String(field.value), 
-            field.required
-          )
-        ).join('')}
-    </div>`;
-  }
-
-  private generateVehicleSection(form: ACORDForm): string {
-    const vehicleFields = form.fields.filter(field => 
-      field.fieldName.includes('vehicle') || 
-      field.fieldName.includes('driver') ||
-      field.fieldName.includes('miles') ||
-      field.fieldName.includes('vin')
-    );
-
-    if (vehicleFields.length === 0) return '';
-
-    return `
-    <div class="field-group">
-        <div class="field-group-title">Vehicle Information</div>
-        ${vehicleFields.map(field => 
-          this.generateFieldRow(
-            this.formatFieldLabel(field.fieldName), 
-            String(field.value), 
-            field.required
-          )
-        ).join('')}
-    </div>`;
-  }
-
-  private generateBusinessSection(form: ACORDForm): string {
-    const businessFields = form.fields.filter(field => 
-      field.fieldName.includes('business') || 
-      field.fieldName.includes('employee') ||
-      field.fieldName.includes('revenue') ||
-      field.fieldName.includes('operations') ||
-      field.fieldName.includes('classification')
-    );
-
-    if (businessFields.length === 0) return '';
-
-    return `
-    <div class="field-group">
-        <div class="field-group-title">Business Information</div>
-        ${businessFields.map(field => 
-          this.generateFieldRow(
-            this.formatFieldLabel(field.fieldName), 
-            String(field.value), 
-            field.required
-          )
-        ).join('')}
-    </div>`;
-  }
-
-  private generatePropertySection(form: ACORDForm): string {
-    const propertyFields = form.fields.filter(field => 
-      field.fieldName.includes('property') || 
-      field.fieldName.includes('building') ||
-      field.fieldName.includes('inventory') ||
-      field.fieldName.includes('hazardous')
-    );
-
-    if (propertyFields.length === 0) return '';
-
-    return `
-    <div class="field-group">
-        <div class="field-group-title">Property Information</div>
-        ${propertyFields.map(field => 
-          this.generateFieldRow(
-            this.formatFieldLabel(field.fieldName), 
-            String(field.value), 
-            field.required
-          )
-        ).join('')}
-    </div>`;
-  }
-
-  private formatFieldLabel(fieldName: string): string {
-    return fieldName
-      .replace(/_/g, ' ')
-      .replace(/\b\w/g, l => l.toUpperCase())
-      .replace('Applicant ', '')
-      .replace('Business ', '')
-      .replace('Contact ', '')
-      .replace('Vehicle ', '');
   }
 
   private async htmlToPDF(html: string): Promise<Blob> {

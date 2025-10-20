@@ -46,7 +46,7 @@ export interface ACORDField {
 export interface ACORDForm {
   formType: string;
   formName: string;
-  fields: ACORDField[];
+  fields: Record<string, string>;
   generatedAt: Date;
   customerData: CustomerData;
 }
@@ -265,24 +265,23 @@ class ACORDFormGenerator {
   }
 
   private generateForm(formType: string, customerData: CustomerData): ACORDForm | null {
+    if (formType === 'ACORD 125') {
+      return this.generateACORD125(customerData);
+    }
+    
     const fieldMapping = this.fieldMappings[formType];
     if (!fieldMapping) {
       console.warn(`No field mapping found for form type: ${formType}`);
       return null;
     }
 
-    const fields: ACORDField[] = [];
+    const fields: Record<string, string> = {};
     
     for (const [acordField, dataPath] of Object.entries(fieldMapping)) {
       const value = this.getValueFromPath(customerData, dataPath);
       
       if (value !== undefined && value !== null && value !== '') {
-        fields.push({
-          fieldName: acordField,
-          value: value,
-          required: this.isRequiredField(acordField),
-          description: this.getFieldDescription(acordField)
-        });
+        fields[acordField] = String(value);
       }
     }
 
@@ -290,6 +289,65 @@ class ACORDFormGenerator {
       formType,
       formName: this.getFormDisplayName(formType),
       fields,
+      generatedAt: new Date(),
+      customerData
+    };
+  }
+
+  // Generate ACORD 125 - Commercial General Liability Application
+  private generateACORD125(customerData: CustomerData): ACORDForm {
+    return {
+      formType: 'ACORD 125',
+      formName: 'Commercial General Liability Application',
+      fields: {
+        // Producer Information
+        'Producer_FullName_A': 'ACORD Insurance Agency',
+        'Producer_MailingAddress_LineOne_A': '123 Insurance St',
+        'Producer_MailingAddress_CityName_A': 'Insurance City',
+        'Producer_MailingAddress_StateOrProvinceCode_A': 'IC',
+        'Producer_MailingAddress_PostalCode_A': '12345',
+        'Producer_ContactPerson_FullName_A': 'John Producer',
+        'Producer_ContactPerson_PhoneNumber_A': '(555) 123-4567',
+        'Producer_ContactPerson_EmailAddress_A': 'john@acord.com',
+        
+        // Insurer Information
+        'Insurer_FullName_A': 'Sample Insurance Company',
+        'Insurer_NAICCode_A': '12345',
+        'Insurer_ProductDescription_A': 'Commercial General Liability',
+        'Insurer_ProductCode_A': 'CGL001',
+        'Policy_PolicyNumberIdentifier_A': 'POL-2024-001',
+        
+        // Policy Status
+        'Policy_Status_QuoteIndicator_A': 'Yes',
+        'Policy_Status_EffectiveDate_A': new Date().toLocaleDateString(),
+        
+        // Business Information
+        'CommercialPolicy_BusinessName_A': customerData.businessName || 'N/A',
+        'CommercialPolicy_BusinessAddress_A': customerData.address || 'N/A',
+        'CommercialPolicy_BusinessCity_A': customerData.city || 'N/A',
+        'CommercialPolicy_BusinessState_A': customerData.state || 'N/A',
+        'CommercialPolicy_BusinessZip_A': customerData.zipCode || 'N/A',
+        'CommercialPolicy_FederalTaxId_A': customerData.federalId || 'N/A',
+        'CommercialPolicy_BusinessType_A': customerData.businessType || 'N/A',
+        'CommercialPolicy_YearsInBusiness_A': customerData.yearsInBusiness || 'N/A',
+        'CommercialPolicy_Website_A': customerData.website || 'N/A',
+        
+        // Contact Information
+        'CommercialPolicy_ContactName_A': customerData.contactName || 'N/A',
+        'CommercialPolicy_ContactEmail_A': customerData.email || 'N/A',
+        'CommercialPolicy_ContactPhone_A': customerData.phone || 'N/A',
+        
+        // Operations Description
+        'CommercialPolicy_OperationsDescription_A': customerData.description || 'N/A',
+        
+        // Coverage Information
+        'CommercialPolicy_CoverageTypes_A': customerData.coverageTypes.join(', '),
+        'GeneralLiabilityLineOfBusiness_TotalPremiumAmount_A': '$5,000',
+        
+        // Form Completion
+        'Form_CompletionDate_A': new Date().toLocaleDateString(),
+        'Form_EditionIdentifier_A': 'ACORD 125 2016-03r2'
+      },
       generatedAt: new Date(),
       customerData
     };

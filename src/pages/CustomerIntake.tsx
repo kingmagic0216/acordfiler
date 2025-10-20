@@ -9,13 +9,14 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { ArrowLeft, ArrowRight, Upload, Save, Shield, CheckCircle, Loader2, LogOut, User as UserIcon, Building2 } from "lucide-react";
+import { ArrowLeft, ArrowRight, Upload, Save, Shield, CheckCircle, Loader2, LogOut, User as UserIcon, Building2, XCircle } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { formService, BusinessInfo, ContactInfo, CoverageInfo } from "@/services/formService";
 import { authService, User as AuthUser } from "@/services/authService";
 import { coverageQuestionsService, CoverageQuestion, CoverageResponse, ClientType } from "@/services/coverageQuestionsService";
 import { acordFormGenerator, CustomerData, ACORDForm } from "@/services/acordFormGenerator";
 import { pdfGenerator } from "@/services/pdfGenerator";
+import { validationService, ValidationResult } from "@/services/validationService";
 
 const CustomerIntake = () => {
   const navigate = useNavigate();
@@ -24,6 +25,7 @@ const CustomerIntake = () => {
   const [submissionResult, setSubmissionResult] = useState<{ success: boolean; submissionId?: string; error?: string } | null>(null);
   const [generatedACORDForms, setGeneratedACORDForms] = useState<ACORDForm[]>([]);
   const [isGeneratingForms, setIsGeneratingForms] = useState(false);
+  const [validationErrors, setValidationErrors] = useState<ValidationResult | null>(null);
   const [formData, setFormData] = useState({
     // Step 1: Location & Coverage Type
     zipCode: "",
@@ -200,21 +202,9 @@ const CustomerIntake = () => {
   const handleSubmit = async () => {
     setIsSubmitting(true);
     setSubmissionResult(null);
+    setValidationErrors(null);
 
     try {
-      // Validate required fields
-      if (!formData.businessName || !formData.federalId || !formData.businessType || 
-          !formData.yearsInBusiness || !formData.description || !formData.contactName || 
-          !formData.email || !formData.phone || !formData.address || 
-          !formData.city || !formData.state || !formData.zip) {
-        throw new Error("Please fill in all required fields");
-      }
-
-      // Ensure General Liability is selected (required)
-      if (!formData.coverageTypes.includes("general-liability")) {
-        throw new Error("General Liability coverage is required");
-      }
-
       // Prepare form data for submission
       const businessInfo: BusinessInfo = {
         name: formData.businessName,
@@ -244,8 +234,29 @@ const CustomerIntake = () => {
         coverageResponses: coverageResponses,
       };
 
+      // Create submission object for validation
+      const submission = {
+        id: 'temp',
+        businessInfo,
+        contactInfo,
+        coverageInfo,
+        clientType: formData.clientType as ClientType,
+        status: 'new' as const,
+        priority: 'medium' as const,
+        submittedAt: new Date(),
+        updatedAt: new Date()
+      };
+
+      // Validate the submission
+      const validation = validationService.validateSubmission(submission);
+      setValidationErrors(validation);
+
+      if (!validation.isValid) {
+        throw new Error(`Please complete all required fields. ${validation.errors.length} required field(s) missing.`);
+      }
+
       // Submit the form
-      const submission = await formService.submitForm(businessInfo, contactInfo, coverageInfo);
+      const submittedForm = await formService.submitForm(businessInfo, contactInfo, coverageInfo);
       
       // Generate ACORD forms with customer data
       setIsGeneratingForms(true);
@@ -286,12 +297,12 @@ const CustomerIntake = () => {
       
       setSubmissionResult({
         success: true,
-        submissionId: submission.id,
+        submissionId: submittedForm.id,
       });
 
       // Redirect to success page after a delay
       setTimeout(() => {
-        navigate(`/broker?submission=${submission.id}`);
+        navigate(`/broker?submission=${submittedForm.id}`);
       }, 3000);
 
     } catch (error) {
@@ -1127,6 +1138,41 @@ const CustomerIntake = () => {
               <h3 className="text-xl font-semibold mb-2">Review Your Information</h3>
               <p className="text-muted-foreground">Please review your information before submitting your application.</p>
             </div>
+
+            {/* Validation Errors Display */}
+            {validationErrors && !validationErrors.isValid && (
+              <Card className="border-red-200 bg-red-50">
+                <CardHeader>
+                  <CardTitle className="text-lg text-red-800">⚠️ Required Fields Missing</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-red-700 mb-3">
+                    Please complete the following required fields before submitting:
+                  </p>
+                  <ul className="space-y-1 text-sm text-red-600">
+                    {validationErrors.errors.map((error, index) => (
+                      <li key={index} className="flex items-start">
+                        <span className="text-red-500 mr-2">•</span>
+                        <span>{error.message}</span>
+                      </li>
+                    ))}
+                  </ul>
+                  {validationErrors.warnings.length > 0 && (
+                    <div className="mt-4 pt-3 border-t border-red-200">
+                      <p className="text-red-600 mb-2 font-medium">Recommended fields:</p>
+                      <ul className="space-y-1 text-sm text-red-500">
+                        {validationErrors.warnings.map((warning, index) => (
+                          <li key={index} className="flex items-start">
+                            <span className="text-red-400 mr-2">•</span>
+                            <span>{warning.message}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            )}
 
             <div className="space-y-4">
               <Card>

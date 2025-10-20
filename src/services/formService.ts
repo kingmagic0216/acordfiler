@@ -68,12 +68,33 @@ class FormService {
         coverageInfo: {
           coverageTypes: ['General Liability', 'Cyber Liability', 'Professional Liability'],
           coverageResponses: {
-            'generalLiabilityLimit': '$2,000,000',
-            'cyberLiabilityLimit': '$1,000,000',
-            'professionalLiabilityLimit': '$1,000,000',
-            'hasDataBreachPlan': 'Yes',
-            'employeeCount': '25',
-            'annualRevenue': '$2,500,000'
+            // General Liability Questions
+            'liability-limit': '$2,000,000',
+            'business-operations': 'Software development and IT consulting services for small to medium businesses',
+            'business-classification': 'Technology',
+            'sic-code': '7372',
+            'naics-code': '541511',
+            'employee-count': '25',
+            'annual-revenue': '$1,000,000-$5,000,000',
+            'business-location-count': '1',
+            'products-completed-operations': 'Yes',
+            
+            // Business Property Questions
+            'business-property-value': '$100,000-$500,000',
+            'property-type': 'Office Building',
+            'inventory-value': 'Under $50,000',
+            'building-description': 'Modern office building with open floor plan and modern amenities',
+            'property-address': '123 Innovation Drive, San Francisco, CA 94105',
+            'property-county': 'San Francisco County',
+            'hazardous-materials': 'No',
+            'athletic-teams': 'No',
+            
+            // Cyber Liability Questions
+            'data-stored': ['Customer Information', 'Payment Information'],
+            'data-breach-plan': 'Yes',
+            'cyber-coverage-limit': '$1,000,000',
+            'cyber-security-measures': ['Firewall', 'Antivirus Software', 'Data Encryption', 'Regular Backups'],
+            'previous-data-breaches': 'No'
           }
         },
         status: 'new',
@@ -83,6 +104,118 @@ class FormService {
       },
       {
         id: 'SUB-002',
+        businessInfo: {
+          name: 'Comprehensive Test Corp',
+          federalId: '11-1111111',
+          businessType: 'corporation',
+          yearsInBusiness: 15,
+          description: 'Comprehensive testing company for all ACORD form fields and coverage questions',
+          website: 'https://comprehensivetest.com'
+        },
+        contactInfo: {
+          contactName: 'John Comprehensive',
+          email: 'john@comprehensivetest.com',
+          phone: '(555) 999-8888',
+          address: '999 Test Street',
+          city: 'New York',
+          state: 'NY',
+          zipCode: '10001'
+        },
+        coverageInfo: {
+          coverageTypes: ['General Liability', 'Business Property', 'Cyber Liability'],
+          coverageResponses: {
+            // General Liability Questions
+            'liability-limit': '$2,000,000',
+            'business-operations': 'Comprehensive testing company specializing in software quality assurance, automated testing, and comprehensive data validation for enterprise applications',
+            'business-classification': 'Technology',
+            'sic-code': '7372',
+            'naics-code': '541511',
+            'employee-count': '50',
+            'annual-revenue': '$5,000,000+',
+            'business-location-count': '3',
+            'products-completed-operations': 'Yes',
+            
+            // Business Property Questions
+            'business-property-value': '$1,000,000-$5,000,000',
+            'property-type': 'Office Building',
+            'inventory-value': '$100,000-$500,000',
+            'building-description': 'Modern 5-story office building constructed in 2020 with steel frame, glass exterior, LEED certified, featuring open floor plan, state-of-the-art technology infrastructure, backup power systems, and advanced security systems',
+            'property-address': '999 Test Street, New York, NY 10001',
+            'property-county': 'New York County',
+            'hazardous-materials': 'No',
+            'athletic-teams': 'No',
+            
+            // Cyber Liability Questions
+            'data-stored': ['Customer Information', 'Payment Information', 'Personal Identifiable Information', 'Financial Data'],
+            'data-breach-plan': 'Yes',
+            'cyber-coverage-limit': '$2,000,000+',
+            'cyber-security-measures': ['Firewall', 'Antivirus Software', 'Data Encryption', 'Regular Backups', 'Employee Training', 'Incident Response Plan'],
+            'previous-data-breaches': 'No'
+          }
+        },
+        status: 'new',
+        priority: 'high',
+        submittedAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000), // 1 day ago
+        brokerId: 'broker-001'
+      },
+      {
+        id: 'SUB-003',
+        businessInfo: {
+          name: 'Comprehensive Test Corp',
+          federalId: '11-1111111',
+          businessType: 'corporation',
+          yearsInBusiness: 15,
+          description: 'Comprehensive testing company for all ACORD form fields and coverage questions',
+          website: 'https://comprehensivetest.com'
+        },
+        contactInfo: {
+          contactName: 'John Comprehensive',
+          email: 'john@comprehensivetest.com',
+          phone: '(555) 999-8888',
+          address: '999 Test Street',
+          city: 'New York',
+          state: 'NY',
+          zipCode: '10001'
+        },
+        coverageInfo: {
+          coverageTypes: ['General Liability', 'Business Property', 'Cyber Liability'],
+          coverageResponses: {
+            // General Liability Questions
+            'liability-limit': '$2,000,000',
+            'business-operations': 'Comprehensive testing company specializing in software quality assurance, automated testing, and comprehensive data validation for enterprise applications',
+            'business-classification': 'Technology',
+            'sic-code': '7372',
+            'naics-code': '541511',
+            'employee-count': '50',
+            'annual-revenue': '$5,000,000+',
+            'business-location-count': '3',
+            'products-completed-operations': 'Yes',
+            
+            // Business Property Questions
+            'business-property-value': '$1,000,000-$5,000,000',
+            'property-type': 'Office Building',
+            'inventory-value': '$100,000-$500,000',
+            'building-description': 'Modern 5-story office building constructed in 2020 with steel frame, glass exterior, LEED certified, featuring open floor plan, state-of-the-art technology infrastructure, backup power systems, and advanced security systems',
+            'property-address': '999 Test Street, New York, NY 10001',
+            'property-county': 'New York County',
+            'hazardous-materials': 'No',
+            'athletic-teams': 'No',
+            
+            // Cyber Liability Questions
+            'data-stored': ['Customer Information', 'Payment Information', 'Personal Identifiable Information', 'Financial Data'],
+            'data-breach-plan': 'Yes',
+            'cyber-coverage-limit': '$2,000,000+',
+            'cyber-security-measures': ['Firewall', 'Antivirus Software', 'Data Encryption', 'Regular Backups', 'Employee Training', 'Incident Response Plan'],
+            'previous-data-breaches': 'No'
+          }
+        },
+        status: 'new',
+        priority: 'high',
+        submittedAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000), // 1 day ago
+        brokerId: 'broker-001'
+      },
+      {
+        id: 'SUB-003',
         businessInfo: {
           name: 'Downtown Restaurant Group',
           federalId: '98-7654321',

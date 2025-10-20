@@ -20,7 +20,7 @@ import notificationRoutes from '@/routes/notifications';
 
 // Import middleware
 import { errorHandler } from '@/middleware/errorHandler';
-import { notFoundHandler } from '@/middleware/notFoundHandler';
+import { notFoundHandler } from '@/middleware/errorHandler';
 import { logger } from '@/utils/logger';
 import { connectDatabase } from '@/database/connection';
 import { connectRedis } from '@/utils/redis';
@@ -145,12 +145,16 @@ async function initializeServices() {
     await connectDatabase();
     logger.info('Database connected successfully');
     
-    // Connect to Redis
-    await connectRedis();
-    logger.info('Redis connected successfully');
+    // Connect to Redis (optional for development)
+    try {
+      await connectRedis();
+      logger.info('Redis connected successfully');
+    } catch (error) {
+      logger.warn('Redis connection failed, continuing without Redis:', error);
+    }
     
     // Start server
-    server.listen(PORT, HOST, () => {
+    server.listen(parseInt(PORT as string), HOST, () => {
       logger.info(`Server running on http://${HOST}:${PORT}`);
       logger.info(`Environment: ${process.env.NODE_ENV}`);
       logger.info(`API Documentation: http://${HOST}:${PORT}/api-docs`);
