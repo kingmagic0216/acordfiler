@@ -1,0 +1,6 @@
+# Render Configuration for Backend Only
+# This file tells Render to deploy only the backend
+
+# Build settings for backend
+buildCommand: cd backend && npm install && npm run build
+startCommand: cd backend && npm start
