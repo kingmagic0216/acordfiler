@@ -1,0 +1,28 @@
+services:
+  - type: web
+    name: acord-backend
+    env: node
+    plan: free
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: SUPABASE_URL
+        value: https://znlnibnxvamplhccbozt.supabase.co
+      - key: SUPABASE_ANON_KEY
+        value: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpubG5pYm54dmFtcGxoY2Nib3p0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA5NjIwNjMsImV4cCI6MjA3NjUzODA2M30.xWiWSG9nstPl3DjUAmpHhZLN5Yano7a1L0Yu6IPmD6g
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        value: your-service-role-key-here
+      - key: DATABASE_URL
+        value: postgresql://postgres.znlnibnxvamplhccbozt:vuyLudfzWfW5DhiP@aws-1-us-east-2.pooler.supabase.com:6543/postgres?pgbouncer=true
+      - key: DIRECT_URL
+        value: postgresql://postgres.znlnibnxvamplhccbozt:vuyLudfzWfW5DhiP@aws-1-us-east-2.pooler.supabase.com:5432/postgres
+      - key: JWT_SECRET
+        value: your-jwt-secret-key-here
+      - key: JWT_REFRESH_SECRET
+        value: your-refresh-secret-key-here
+      - key: CORS_ORIGIN
+        value: https://your-frontend-url.vercel.app
