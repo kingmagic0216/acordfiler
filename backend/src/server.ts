@@ -10,7 +10,8 @@ import dotenv from 'dotenv';
 import path from 'path';
 
 // Import routes
-import authRoutes from '@/routes/auth';
+import enhancedAuthRoutes from '@/routes/enhancedAuth';
+import apiRoutes from '@/routes/api';
 import userRoutes from '@/routes/users';
 import submissionRoutes from '@/routes/submissions';
 import documentRoutes from '@/routes/documents';
@@ -101,7 +102,8 @@ app.get('/health', (req, res) => {
 });
 
 // API routes
-app.use('/api/auth', authRoutes);
+app.use('/auth', enhancedAuthRoutes);
+app.use('/api', apiRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/submissions', submissionRoutes);
 app.use('/api/documents', documentRoutes);

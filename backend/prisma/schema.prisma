@@ -1,273 +1,209 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "sqlite"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
-// User Management
 model User {
-  id        String   @id @default(cuid())
-  email     String   @unique
-  password  String
-  firstName String
-  lastName  String
-  role      String   @default("CUSTOMER") // ADMIN, BROKER, CUSTOMER
-  status    String   @default("ACTIVE")   // ACTIVE, INACTIVE, SUSPENDED, PENDING
-  avatar    String?
-  phone     String?
-  timezone  String @default("UTC")
-  
-  // Agency/Tenant
-  agencyId  String?
-  agency    Agency? @relation(fields: [agencyId], references: [id])
-  
-  // Timestamps
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  lastLoginAt DateTime?
-  
-  // Relations
-  submissions     Submission[]
-  auditLogs       AuditLog[]
-  notifications   Notification[]
-  sessions        UserSession[]
-  
+  id            String         @id @default(dbgenerated("('user_'::text || substr(md5((random())::text), 1, 8))"))
+  email         String         @unique
+  password      String
+  first_name    String
+  last_name     String
+  role          String?        @default("CUSTOMER")
+  status        String?        @default("ACTIVE")
+  avatar        String?
+  phone         String?
+  timezone      String?        @default("UTC")
+  agency_id     String?
+  created_at    DateTime?      @default(now()) @db.Timestamptz(6)
+  updated_at    DateTime?      @default(now()) @db.Timestamptz(6)
+  last_login_at DateTime?      @db.Timestamptz(6)
+  audit_logs    AuditLog[]
+  notifications Notification[]
+  submissions   Submission[]
+  user_sessions UserSession[]
+  agencies      Agency?        @relation(fields: [agency_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_users_agency")
+
+  @@index([agency_id], map: "idx_users_agency_id")
+  @@index([email], map: "idx_users_email")
   @@map("users")
 }
 
 model Agency {
-  id          String @id @default(cuid())
-  name        String
-  domain      String @unique
-  logo        String?
-  primaryColor String @default("#1e3a8a")
-  accentColor String @default("#3b82f6")
-  
-  // Settings - stored as JSON string for SQLite
-  settings    String?
-  
-  // Timestamps
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  
-  // Relations
-  users       User[]
-  submissions Submission[]
-  fieldMappings FieldMapping[]
-  
+  id             String         @id @default(dbgenerated("('agency_'::text || substr(md5((random())::text), 1, 8))"))
+  name           String
+  domain         String         @unique
+  logo           String?
+  primary_color  String?        @default("#1e3a8a")
+  accent_color   String?        @default("#3b82f6")
+  settings       Json?
+  created_at     DateTime?      @default(now()) @db.Timestamptz(6)
+  updated_at     DateTime?      @default(now()) @db.Timestamptz(6)
+  field_mappings FieldMapping[]
+  submissions    Submission[]
+  users          User[]
+
   @@map("agencies")
 }
 
-// Authentication
 model UserSession {
-  id        String   @id @default(cuid())
-  userId    String
-  token     String   @unique
-  refreshToken String @unique
-  expiresAt DateTime
-  ipAddress String?
-  userAgent String?
-  
-  // Relations
-  user      User @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
-  // Timestamps
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  
+  id            String    @id @default(dbgenerated("('session_'::text || substr(md5((random())::text), 1, 8))"))
+  user_id       String
+  token         String    @unique
+  refresh_token String    @unique
+  expires_at    DateTime  @db.Timestamptz(6)
+  ip_address    String?
+  user_agent    String?
+  created_at    DateTime? @default(now()) @db.Timestamptz(6)
+  updated_at    DateTime? @default(now()) @db.Timestamptz(6)
+  users         User      @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
   @@map("user_sessions")
 }
 
-// Form Submissions
 model Submission {
-  id          String @id @default(cuid())
-  submissionId String @unique // Human-readable ID like SUB-001
-  
-  // Business Information
-  businessName     String
-  federalId        String
-  businessType     String
-  yearsInBusiness  Int
-  businessDescription String
-  website          String?
-  
-  // Contact Information
-  contactName      String
-  email            String
-  phone            String
-  address          String
-  city             String
-  state            String
-  zipCode          String
-  
-  // Coverage Information - stored as JSON string for SQLite
-  coverageTypes    String // JSON string for SQLite compatibility
-  coverageResponses String?   // JSON string for SQLite compatibility
-  
-  // Client Type
-  clientType       String @default("BUSINESS") // PERSONAL, BUSINESS, BOTH
-  
-  // Status and Priority
-  status          String @default("NEW") // NEW, REVIEW, SIGNATURE, COMPLETED, REJECTED, CANCELLED
-  priority        String @default("MEDIUM") // LOW, MEDIUM, HIGH, URGENT
-  
-  // Assignment
-  brokerId        String?
-  broker          User? @relation(fields: [brokerId], references: [id])
-  
-  // Agency/Tenant
-  agencyId        String?
-  agency          Agency? @relation(fields: [agencyId], references: [id])
-  
-  // Timestamps
-  submittedAt     DateTime @default(now())
-  reviewedAt      DateTime?
-  completedAt     DateTime?
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
-  
-  // Relations
-  documents       Document[]
-  acordForms      AcordForm[]
-  auditLogs       AuditLog[]
-  notifications   Notification[]
-  
+  id                   String         @id @default(dbgenerated("('sub_'::text || substr(md5((random())::text), 1, 8))"))
+  submission_id        String         @unique
+  business_name        String
+  federal_id           String
+  business_type        String
+  years_in_business    Int
+  business_description String
+  website              String?
+  contact_name         String
+  email                String
+  phone                String
+  address              String
+  city                 String
+  state                String
+  zip_code             String
+  coverage_types       Json
+  coverage_responses   Json?
+  client_type          String?        @default("BUSINESS")
+  status               String?        @default("NEW")
+  priority             String?        @default("MEDIUM")
+  broker_id            String?
+  agency_id            String?
+  submitted_at         DateTime?      @default(now()) @db.Timestamptz(6)
+  reviewed_at          DateTime?      @db.Timestamptz(6)
+  completed_at         DateTime?      @db.Timestamptz(6)
+  created_at           DateTime?      @default(now()) @db.Timestamptz(6)
+  updated_at           DateTime?      @default(now()) @db.Timestamptz(6)
+  acord_forms          AcordForm[]
+  audit_logs           AuditLog[]
+  documents            Document[]
+  notifications        Notification[]
+  agencies             Agency?        @relation(fields: [agency_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  users                User?          @relation(fields: [broker_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@index([agency_id], map: "idx_submissions_agency_id")
+  @@index([broker_id], map: "idx_submissions_broker_id")
+  @@index([status], map: "idx_submissions_status")
   @@map("submissions")
 }
 
-// Document Management
 model Document {
-  id          String @id @default(cuid())
-  submissionId String
-  fileName    String
-  originalName String
-  filePath    String
-  fileSize    Int
-  mimeType    String
-  fileHash    String @unique
-  
-  // Document metadata
-  documentType String // APPLICATION, CERTIFICATE, POLICY, INVOICE, OTHER
-  description String?
-  
-  // Upload information
-  uploadedBy  String
-  uploadedAt DateTime @default(now())
-  
-  // Relations
-  submission  Submission @relation(fields: [submissionId], references: [id], onDelete: Cascade)
-  
+  id            String     @id @default(dbgenerated("('doc_'::text || substr(md5((random())::text), 1, 8))"))
+  submission_id String
+  file_name     String
+  original_name String
+  file_path     String
+  file_size     Int
+  mime_type     String
+  file_hash     String     @unique
+  document_type String
+  description   String?
+  uploaded_by   String
+  uploaded_at   DateTime?  @default(now()) @db.Timestamptz(6)
+  submissions   Submission @relation(fields: [submission_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([submission_id], map: "idx_documents_submission_id")
   @@map("documents")
 }
 
-// ACORD Forms
 model AcordForm {
-  id          String @id @default(cuid())
-  submissionId String
-  formType    String // ACORD 125, 126, 127, etc.
-  formData    String // JSON string for SQLite compatibility
-  
-  // Generation info
-  generatedBy String
-  generatedAt DateTime @default(now())
-  
-  // Status
-  status      String @default("GENERATED") // GENERATED, SIGNED, REJECTED, EXPIRED
-  signedAt    DateTime?
-  signedBy    String?
-  
-  // File info
-  filePath    String?
-  fileHash    String?
-  
-  // Relations
-  submission  Submission @relation(fields: [submissionId], references: [id], onDelete: Cascade)
-  
+  id            String     @id @default(dbgenerated("('form_'::text || substr(md5((random())::text), 1, 8))"))
+  submission_id String
+  form_type     String
+  form_data     Json
+  generated_by  String
+  generated_at  DateTime?  @default(now()) @db.Timestamptz(6)
+  status        String?    @default("GENERATED")
+  signed_at     DateTime?  @db.Timestamptz(6)
+  signed_by     String?
+  file_path     String?
+  file_hash     String?
+  submissions   Submission @relation(fields: [submission_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([submission_id], map: "idx_acord_forms_submission_id")
   @@map("acord_forms")
 }
 
-// Field Mapping Configuration
 model FieldMapping {
-  id          String @id @default(cuid())
-  acordForm   String
-  fieldName   String
-  intakeField String
-  fieldType   String // TEXT, TEXTAREA, NUMBER, SELECT, CHECKBOX, DATE, EMAIL, PHONE
-  required    Boolean @default(false)
-  
-  // Agency/Tenant
-  agencyId    String?
-  agency      Agency? @relation(fields: [agencyId], references: [id])
-  
-  // Timestamps
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  
+  id           String    @id @default(dbgenerated("('mapping_'::text || substr(md5((random())::text), 1, 8))"))
+  acord_form   String
+  field_name   String
+  intake_field String
+  field_type   String
+  required     Boolean?  @default(false)
+  agency_id    String?
+  created_at   DateTime? @default(now()) @db.Timestamptz(6)
+  updated_at   DateTime? @default(now()) @db.Timestamptz(6)
+  agencies     Agency?   @relation(fields: [agency_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
   @@map("field_mappings")
 }
 
-// Notifications
 model Notification {
-  id          String @id @default(cuid())
-  userId      String
-  type        String // SUBMISSION_NEW, SUBMISSION_UPDATED, etc.
-  title       String
-  message     String
-  data        String? // JSON string for SQLite compatibility
-  
-  // Status
-  read        Boolean @default(false)
-  readAt      DateTime?
-  
-  // Relations
-  user        User @relation(fields: [userId], references: [id], onDelete: Cascade)
-  submission  Submission? @relation(fields: [submissionId], references: [id])
-  submissionId String?
-  
-  // Timestamps
-  createdAt   DateTime @default(now())
-  
+  id            String      @id @default(dbgenerated("('notif_'::text || substr(md5((random())::text), 1, 8))"))
+  user_id       String
+  type          String
+  title         String
+  message       String
+  data          Json?
+  read          Boolean?    @default(false)
+  read_at       DateTime?   @db.Timestamptz(6)
+  submission_id String?
+  created_at    DateTime?   @default(now()) @db.Timestamptz(6)
+  submissions   Submission? @relation(fields: [submission_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  users         User        @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([read], map: "idx_notifications_read")
+  @@index([user_id], map: "idx_notifications_user_id")
   @@map("notifications")
 }
 
-// Audit Logging
 model AuditLog {
-  id          String @id @default(cuid())
-  userId      String?
-  action      String
-  resource    String
-  resourceId  String?
-  details     String? // JSON string for SQLite compatibility
-  ipAddress   String?
-  userAgent   String?
-  
-  // Relations
-  user        User? @relation(fields: [userId], references: [id])
-  submission  Submission? @relation(fields: [submissionId], references: [id])
-  submissionId String?
-  
-  // Timestamps
-  createdAt   DateTime @default(now())
-  
+  id            String      @id @default(dbgenerated("('audit_'::text || substr(md5((random())::text), 1, 8))"))
+  user_id       String?
+  action        String
+  resource      String
+  resource_id   String?
+  details       Json?
+  ip_address    String?
+  user_agent    String?
+  submission_id String?
+  created_at    DateTime?   @default(now()) @db.Timestamptz(6)
+  submissions   Submission? @relation(fields: [submission_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  users         User?       @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@index([created_at], map: "idx_audit_logs_created_at")
+  @@index([user_id], map: "idx_audit_logs_user_id")
   @@map("audit_logs")
 }
 
-// System Settings
 model SystemSetting {
-  id          String @id @default(cuid())
-  key         String @unique
-  value       String // JSON string for SQLite compatibility
+  id          String    @id @default(dbgenerated("('setting_'::text || substr(md5((random())::text), 1, 8))"))
+  key         String    @unique
+  value       Json
   description String?
-  
-  // Timestamps
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  
+  created_at  DateTime? @default(now()) @db.Timestamptz(6)
+  updated_at  DateTime? @default(now()) @db.Timestamptz(6)
+
   @@map("system_settings")
 }
