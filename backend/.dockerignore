@@ -1,0 +1,28 @@
+# Ignore everything except backend
+*
+!backend/
+
+# Ignore common files
+node_modules
+npm-debug.log
+.git
+.gitignore
+README.md
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Ignore frontend files
+src/
+public/
+dist/
+vite.config.ts
+tsconfig.json
+tailwind.config.js
+postcss.config.js
+
+# Ignore deployment files
+vercel.json
+netlify.toml

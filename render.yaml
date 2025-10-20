@@ -1,11 +1,10 @@
 services:
   - type: web
     name: acord-backend
-    env: node
+    env: docker
     plan: free
-    rootDir: backend
-    buildCommand: npm install && npm run build
-    startCommand: npm start
+    dockerfilePath: backend/Dockerfile
+    dockerContextDir: backend
     envVars:
       - key: NODE_ENV
         value: production
