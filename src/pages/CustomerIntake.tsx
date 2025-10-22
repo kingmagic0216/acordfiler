@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -30,7 +30,7 @@ const CustomerIntake = () => {
     // Step 1: Location & Coverage Type
     zipCode: "",
     insuranceType: "" as "personal" | "business" | "both" | "",
-    // Step 2: Client Type
+    // Step 2: Client Type (auto-populated from insuranceType)
     clientType: "" as ClientType | "",
     // Business fields
     businessName: "",
@@ -61,19 +61,34 @@ const CustomerIntake = () => {
   const totalSteps = 7;
   const progress = (currentStep / totalSteps) * 100;
 
+  // Auto-populate clientType based on insuranceType
+  useEffect(() => {
+    if (formData.insuranceType && !formData.clientType) {
+      let clientType: ClientType;
+      if (formData.insuranceType === 'personal') {
+        clientType = 'personal';
+      } else if (formData.insuranceType === 'business') {
+        clientType = 'business';
+      } else {
+        clientType = 'business'; // Default to business for 'both' case
+      }
+      setFormData(prev => ({ ...prev, clientType }));
+    }
+  }, [formData.insuranceType, formData.clientType]);
+
   const getStepTitle = (stepNumber: number) => {
     switch (stepNumber) {
       case 1:
         return "Location & Coverage Type";
       case 2:
-        return "Client Type";
+        return "Coverage Types";
       case 3:
-        return "Coverage Needs";
-      case 4:
         return "Coverage Questions";
+      case 4:
+        return "Coverage Details";
       case 5:
-        if (formData.clientType === 'personal') return "Personal Information";
-        if (formData.clientType === 'business') return "Business Information";
+        if (formData.insuranceType === 'personal') return "Personal Information";
+        if (formData.insuranceType === 'business') return "Business Information";
         return "Personal & Business Information";
       case 6:
         return "Contact Details";
@@ -89,14 +104,14 @@ const CustomerIntake = () => {
       case 1:
         return "Let's start with your location and what type of insurance you need";
       case 2:
-        return "Are you applying for personal or business insurance?";
+        return "Select the specific coverage types you need";
       case 3:
-        return "What coverage do you need?";
-      case 4:
         return "Answer coverage-specific questions";
+      case 4:
+        return "Provide additional coverage details";
       case 5:
-        if (formData.clientType === 'personal') return "Tell us about yourself";
-        if (formData.clientType === 'business') return "Tell us about your business";
+        if (formData.insuranceType === 'personal') return "Tell us about yourself";
+        if (formData.insuranceType === 'business') return "Tell us about your business";
         return "Tell us about yourself and your business";
       case 6:
         return "How can we reach you?";
@@ -124,7 +139,7 @@ const CustomerIntake = () => {
     return availableCoverages.map(coverage => ({
       id: coverage.id,
       label: coverage.name,
-      required: coverage.id === 'general-liability' && clientType === 'business'
+      required: coverage.id === 'general-liability' && formData.insuranceType === 'business'
     }));
   };
 
@@ -429,72 +444,76 @@ const CustomerIntake = () => {
         );
 
       case 2:
-        // Step 2: Client Type (moved from old case 1)
+        // Step 2: Coverage Types Selection
         return (
           <div className="space-y-6">
             <div>
-              <h3 className="text-lg font-semibold mb-4">Tell us about yourself</h3>
+              <h3 className="text-lg font-semibold mb-4">Select Coverage Types</h3>
               <p className="text-gray-600 mb-6">
-                Are you applying for personal or business insurance? This helps us provide the right coverage options and questions for your needs.
+                Based on your selection of {formData.insuranceType === 'personal' ? 'Personal' : formData.insuranceType === 'business' ? 'Business' : 'Personal & Business'} insurance, 
+                select the types of coverage you're looking for. We'll ask specific questions about each type you select.
               </p>
               
-              <div className="grid md:grid-cols-3 gap-4">
-                <Card 
-                  className={`p-6 cursor-pointer transition-all ${
-                    formData.clientType === 'personal' 
-                      ? 'ring-2 ring-insurance-blue bg-insurance-blue/5' 
-                      : 'hover:bg-muted/50'
-                  }`}
-                  onClick={() => setFormData(prev => ({ ...prev, clientType: 'personal' }))}
-                >
-                  <div className="text-center">
-                    <div className="h-12 w-12 rounded-lg bg-blue-100 flex items-center justify-center mx-auto mb-3">
-                      <UserIcon className="h-6 w-6 text-blue-600" />
+              <div className="space-y-4">
+                {formData.insuranceType === 'personal' || formData.insuranceType === 'both' ? (
+                  <div>
+                    <h4 className="font-medium mb-3 text-blue-600">Personal Coverage Options</h4>
+                    <div className="grid md:grid-cols-2 gap-3">
+                      {['Auto Insurance', 'Home Insurance', 'Personal Liability', 'Life Insurance', 'Health Insurance'].map((coverage) => (
+                        <div key={coverage} className="flex items-center space-x-2">
+                          <Checkbox
+                            id={coverage}
+                            checked={formData.coverageTypes.includes(coverage)}
+                            onCheckedChange={(checked) => {
+                              if (checked) {
+                                setFormData(prev => ({ 
+                                  ...prev, 
+                                  coverageTypes: [...prev.coverageTypes, coverage] 
+                                }));
+                              } else {
+                                setFormData(prev => ({ 
+                                  ...prev, 
+                                  coverageTypes: prev.coverageTypes.filter(type => type !== coverage) 
+                                }));
+                              }
+                            }}
+                          />
+                          <Label htmlFor={coverage} className="text-sm">{coverage}</Label>
+                        </div>
+                      ))}
                     </div>
-                    <h4 className="font-semibold mb-2">Personal Insurance</h4>
-                    <p className="text-sm text-muted-foreground">
-                      Auto, Home, Personal Liability, and other personal coverage
-                    </p>
                   </div>
-                </Card>
-
-                <Card 
-                  className={`p-6 cursor-pointer transition-all ${
-                    formData.clientType === 'business' 
-                      ? 'ring-2 ring-insurance-blue bg-insurance-blue/5' 
-                      : 'hover:bg-muted/50'
-                  }`}
-                  onClick={() => setFormData(prev => ({ ...prev, clientType: 'business' }))}
-                >
-                  <div className="text-center">
-                    <div className="h-12 w-12 rounded-lg bg-green-100 flex items-center justify-center mx-auto mb-3">
-                      <Building2 className="h-6 w-6 text-green-600" />
+                ) : null}
+                
+                {formData.insuranceType === 'business' || formData.insuranceType === 'both' ? (
+                  <div>
+                    <h4 className="font-medium mb-3 text-green-600">Business Coverage Options</h4>
+                    <div className="grid md:grid-cols-2 gap-3">
+                      {['General Liability', 'Commercial Auto', 'Workers Compensation', 'Professional Liability', 'Property Insurance', 'Cyber Liability'].map((coverage) => (
+                        <div key={coverage} className="flex items-center space-x-2">
+                          <Checkbox
+                            id={coverage}
+                            checked={formData.coverageTypes.includes(coverage)}
+                            onCheckedChange={(checked) => {
+                              if (checked) {
+                                setFormData(prev => ({ 
+                                  ...prev, 
+                                  coverageTypes: [...prev.coverageTypes, coverage] 
+                                }));
+                              } else {
+                                setFormData(prev => ({ 
+                                  ...prev, 
+                                  coverageTypes: prev.coverageTypes.filter(type => type !== coverage) 
+                                }));
+                              }
+                            }}
+                          />
+                          <Label htmlFor={coverage} className="text-sm">{coverage}</Label>
+                        </div>
+                      ))}
                     </div>
-                    <h4 className="font-semibold mb-2">Business Insurance</h4>
-                    <p className="text-sm text-muted-foreground">
-                      General Liability, Commercial Auto, Workers Comp, and more
-                    </p>
                   </div>
-                </Card>
-
-                <Card 
-                  className={`p-6 cursor-pointer transition-all ${
-                    formData.clientType === 'both' 
-                      ? 'ring-2 ring-insurance-blue bg-insurance-blue/5' 
-                      : 'hover:bg-muted/50'
-                  }`}
-                  onClick={() => setFormData(prev => ({ ...prev, clientType: 'both' }))}
-                >
-                  <div className="text-center">
-                    <div className="h-12 w-12 rounded-lg bg-purple-100 flex items-center justify-center mx-auto mb-3">
-                      <Shield className="h-6 w-6 text-purple-600" />
-                    </div>
-                    <h4 className="font-semibold mb-2">Both Personal & Business</h4>
-                    <p className="text-sm text-muted-foreground">
-                      Comprehensive coverage for both personal and business needs
-                    </p>
-                  </div>
-                </Card>
+                ) : null}
               </div>
             </div>
           </div>
@@ -539,13 +558,6 @@ const CustomerIntake = () => {
                               <h5 className="font-medium text-sm">{coverage.name}</h5>
                             </div>
                             <p className="text-xs text-gray-600">{coverage.description}</p>
-                            <div className="mt-2">
-                              {coverage.acordForms.map((form, index) => (
-                                <Badge key={index} variant="outline" className="text-xs mr-1">
-                                  {form}
-                                </Badge>
-                              ))}
-                            </div>
                           </div>
                         </div>
                       </Card>
@@ -604,7 +616,7 @@ const CustomerIntake = () => {
             <div>
               <h3 className="text-lg font-semibold mb-4">Coverage-Specific Questions</h3>
               <p className="text-gray-600 mb-6">
-                Please answer these questions about the coverage types you selected. This helps us provide accurate quotes and generate the right ACORD forms.
+                Please answer these questions about the coverage types you selected. This helps us provide accurate quotes and coverage recommendations.
               </p>
             </div>
 
@@ -717,7 +729,7 @@ const CustomerIntake = () => {
                 <div>
                   <h4 className="font-semibold text-green-900 mb-1">Great Progress!</h4>
                   <p className="text-sm text-green-700">
-                    These answers will help us generate accurate ACORD forms and provide you with the best coverage options.
+                    These answers will help us provide you with accurate quotes and the best coverage options.
                   </p>
                 </div>
               </div>
@@ -727,7 +739,7 @@ const CustomerIntake = () => {
 
       case 5:
         // Step 5: Personal/Business Information (moved from old case 4)
-        if (formData.clientType === 'personal') {
+        if (formData.insuranceType === 'personal') {
           return (
             <div className="space-y-6">
               <div>
@@ -805,7 +817,7 @@ const CustomerIntake = () => {
               </div>
             </div>
           );
-        } else if (formData.clientType === 'business') {
+        } else if (formData.insuranceType === 'business') {
           return (
             <div className="space-y-6">
               <div>
