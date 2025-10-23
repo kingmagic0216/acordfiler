@@ -891,8 +891,8 @@ class CoverageQuestionsService {
     return this.coverageTypes.find(coverage => coverage.id === id);
   }
 
-  public getQuestionsForCoverages(coverageIds: string[], clientType?: ClientType): CoverageQuestion[] {
-    const allQuestions: CoverageQuestion[] = [];
+  public getQuestionsGroupedByCoverage(coverageIds: string[], clientType?: ClientType): Record<string, CoverageQuestion[]> {
+    const groupedQuestions: Record<string, CoverageQuestion[]> = {};
 
     coverageIds.forEach(coverageId => {
       const coverageType = this.getCoverageTypeById(coverageId);
@@ -900,16 +900,14 @@ class CoverageQuestionsService {
         const questions = coverageType.questions.filter(question =>
           !clientType || !question.clientTypes || question.clientTypes.includes(clientType)
         );
-        allQuestions.push(...questions);
+        
+        if (questions.length > 0) {
+          groupedQuestions[coverageId] = questions;
+        }
       }
     });
 
-    // Remove duplicate questions (same ID)
-    const uniqueQuestions = allQuestions.filter((question, index, self) =>
-      index === self.findIndex(q => q.id === question.id)
-    );
-
-    return uniqueQuestions;
+    return groupedQuestions;
   }
 
   public getCoverageCategories(): string[] {

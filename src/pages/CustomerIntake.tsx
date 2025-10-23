@@ -549,12 +549,12 @@ const CustomerIntake = () => {
 
       case 3:
         // Step 3: Coverage Questions (moved from old case 4)
-        const selectedCoverageQuestions = coverageQuestionsService.getQuestionsForCoverages(
+        const groupedCoverageQuestions = coverageQuestionsService.getQuestionsGroupedByCoverage(
           formData.coverageTypes, 
           formData.clientType
         );
 
-        if (selectedCoverageQuestions.length === 0) {
+        if (Object.keys(groupedCoverageQuestions).length === 0) {
           return (
             <div className="space-y-6">
               <div className="text-center py-8">
@@ -584,7 +584,34 @@ const CustomerIntake = () => {
             </div>
 
             <div className="space-y-6">
-              {selectedCoverageQuestions.map((question) => (
+              {Object.entries(groupedCoverageQuestions).map(([coverageType, questions]) => {
+                const coverageDisplayNames = {
+                  'personal-auto': 'Personal Auto Insurance',
+                  'homeowners': 'Homeowners Insurance',
+                  'personal-liability': 'Personal Liability',
+                  'life': 'Life Insurance',
+                  'health': 'Health Insurance',
+                  'general-liability': 'General Liability',
+                  'commercial-auto': 'Commercial Auto',
+                  'workers-compensation': 'Workers Compensation',
+                  'professional-liability': 'Professional Liability',
+                  'property': 'Business Property',
+                  'cyber-liability': 'Cyber Liability'
+                };
+                
+                return (
+                  <Card key={coverageType} className="p-6">
+                    <div className="mb-6">
+                      <h4 className="text-lg font-semibold text-blue-600 mb-2">
+                        {coverageDisplayNames[coverageType as keyof typeof coverageDisplayNames] || coverageType}
+                      </h4>
+                      <p className="text-sm text-gray-600">
+                        Questions specific to {coverageDisplayNames[coverageType as keyof typeof coverageDisplayNames] || coverageType}
+                      </p>
+                    </div>
+                    
+                    <div className="space-y-6">
+                      {questions.map((question) => (
                 <Card key={question.id} className="p-4">
                   <div className="space-y-3">
                     <div className="flex items-start space-x-2">
