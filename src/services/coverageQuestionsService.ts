@@ -200,6 +200,168 @@ class CoverageQuestionsService {
           options: ['$250', '$500', '$1,000', '$2,500', '$5,000'],
           acordField: 'deductible_amount',
           description: 'Amount you pay out-of-pocket before insurance covers damage'
+        },
+        {
+          id: 'primary-driver-license-number',
+          question: 'Primary driver\'s license number',
+          type: 'text',
+          required: true,
+          placeholder: 'Driver\'s license number',
+          acordField: 'primary_driver_license_number',
+          description: 'Driver\'s license number of the primary driver'
+        },
+        {
+          id: 'primary-driver-license-state',
+          question: 'Primary driver\'s license state',
+          type: 'select',
+          required: true,
+          options: ['AL', 'AK', 'AZ', 'AR', 'CA', 'CO', 'CT', 'DE', 'FL', 'GA', 'HI', 'ID', 'IL', 'IN', 'IA', 'KS', 'KY', 'LA', 'ME', 'MD', 'MA', 'MI', 'MN', 'MS', 'MO', 'MT', 'NE', 'NV', 'NH', 'NJ', 'NM', 'NY', 'NC', 'ND', 'OH', 'OK', 'OR', 'PA', 'RI', 'SC', 'SD', 'TN', 'TX', 'UT', 'VT', 'VA', 'WA', 'WV', 'WI', 'WY'],
+          acordField: 'primary_driver_license_state',
+          description: 'State that issued the primary driver\'s license'
+        },
+        {
+          id: 'primary-driver-license-issue-date',
+          question: 'Primary driver\'s license issue date',
+          type: 'text',
+          required: true,
+          placeholder: 'MM/DD/YYYY',
+          acordField: 'primary_driver_license_issue_date',
+          description: 'Date the primary driver\'s license was issued'
+        },
+        {
+          id: 'primary-driver-date-of-birth',
+          question: 'Primary driver\'s date of birth',
+          type: 'text',
+          required: true,
+          placeholder: 'MM/DD/YYYY',
+          acordField: 'primary_driver_date_of_birth',
+          description: 'Date of birth of the primary driver'
+        },
+        {
+          id: 'primary-driver-gender',
+          question: 'Primary driver\'s gender',
+          type: 'select',
+          required: true,
+          options: ['Male', 'Female', 'Other', 'Prefer not to answer'],
+          acordField: 'primary_driver_gender',
+          description: 'Gender of the primary driver'
+        },
+        {
+          id: 'primary-driver-marital-status',
+          question: 'Primary driver\'s marital status',
+          type: 'select',
+          required: true,
+          options: ['Single', 'Married', 'Divorced', 'Widowed', 'Separated'],
+          acordField: 'primary_driver_marital_status',
+          description: 'Marital status of the primary driver'
+        },
+        {
+          id: 'vehicle-purchase-price',
+          question: 'What was the purchase price of your primary vehicle?',
+          type: 'select',
+          required: true,
+          options: ['Under $5,000', '$5,000-$10,000', '$10,000-$15,000', '$15,000-$25,000', '$25,000-$35,000', '$35,000-$50,000', '$50,000+'],
+          acordField: 'vehicle_purchase_price',
+          description: 'Original purchase price of your primary vehicle'
+        },
+        {
+          id: 'vehicle-purchase-date',
+          question: 'When did you purchase your primary vehicle?',
+          type: 'text',
+          required: true,
+          placeholder: 'MM/DD/YYYY',
+          acordField: 'vehicle_purchase_date',
+          description: 'Date you purchased your primary vehicle'
+        },
+        {
+          id: 'vehicle-financing',
+          question: 'How is your primary vehicle financed?',
+          type: 'select',
+          required: true,
+          options: ['Owned outright', 'Financed through bank/credit union', 'Financed through dealer', 'Leased', 'Other'],
+          acordField: 'vehicle_financing',
+          description: 'How your primary vehicle is financed'
+        },
+        {
+          id: 'lienholder-name',
+          question: 'Lienholder name (if financed)',
+          type: 'text',
+          required: false,
+          placeholder: 'Bank or financial institution name',
+          acordField: 'lienholder_name',
+          description: 'Name of the bank or financial institution that holds the lien'
+        },
+        {
+          id: 'vehicle-modifications',
+          question: 'Does your vehicle have any modifications?',
+          type: 'select',
+          required: true,
+          options: ['No modifications', 'Performance modifications', 'Custom paint/body work', 'Audio/video equipment', 'Wheel/tire upgrades', 'Other'],
+          acordField: 'vehicle_modifications',
+          description: 'Any aftermarket modifications to your vehicle'
+        },
+        {
+          id: 'vehicle-storage-type',
+          question: 'How is your vehicle stored?',
+          type: 'select',
+          required: true,
+          options: ['Garage', 'Carport', 'Driveway', 'Street parking', 'Parking lot', 'Other'],
+          acordField: 'vehicle_storage_type',
+          description: 'Where your vehicle is typically parked'
+        },
+        {
+          id: 'prior-insurance-cancellation',
+          question: 'Have you ever had insurance cancelled or non-renewed?',
+          type: 'select',
+          required: true,
+          options: ['No', 'Yes, cancelled for non-payment', 'Yes, cancelled for violations', 'Yes, non-renewed', 'Yes, other reason'],
+          acordField: 'prior_insurance_cancellation',
+          description: 'Any prior insurance cancellations or non-renewals'
+        },
+        {
+          id: 'prior-insurance-lapse',
+          question: 'Have you ever had a gap in insurance coverage?',
+          type: 'select',
+          required: true,
+          options: ['No', 'Yes, less than 30 days', 'Yes, 30-90 days', 'Yes, more than 90 days'],
+          acordField: 'prior_insurance_lapse',
+          description: 'Any periods without insurance coverage'
+        },
+        {
+          id: 'prior-insurance-claims',
+          question: 'Any insurance claims in the past 5 years?',
+          type: 'select',
+          required: true,
+          options: ['None', '1 claim', '2 claims', '3+ claims'],
+          acordField: 'prior_insurance_claims',
+          description: 'Previous insurance claims history'
+        },
+        {
+          id: 'desired-policy-term',
+          question: 'What policy term do you prefer?',
+          type: 'select',
+          required: true,
+          options: ['6 months', '12 months'],
+          acordField: 'desired_policy_term',
+          description: 'Length of the insurance policy term'
+        },
+        {
+          id: 'desired-effective-date',
+          question: 'When would you like coverage to start?',
+          type: 'select',
+          required: true,
+          options: ['Immediately', 'Next week', 'Next month', 'Specific date'],
+          acordField: 'desired_effective_date',
+          description: 'When you want your insurance coverage to begin'
+        },
+        {
+          id: 'payment-method-preference',
+          question: 'How would you like to pay for your insurance?',
+          type: 'select',
+          required: true,
+          options: ['Monthly', 'Quarterly', 'Semi-annually', 'Annually'],
+          acordField: 'payment_method_preference',
+          description: 'Preferred payment frequency for your insurance'
         }
       ]
     },
@@ -545,6 +707,96 @@ class CoverageQuestionsService {
           options: ['None', '1 claim', '2 claims', '3+ claims'],
           acordField: 'previous_homeowner_claims',
           description: 'Previous homeowners insurance claims history'
+        },
+        {
+          id: 'property-security-features',
+          question: 'What security features does your property have?',
+          type: 'checkbox',
+          required: true,
+          options: ['Alarm system', 'Security cameras', 'Gated community', 'Security guard', 'Motion sensors', 'None'],
+          acordField: 'property_security_features',
+          description: 'Security measures in place at your property'
+        },
+        {
+          id: 'property-maintenance',
+          question: 'Recent property maintenance or upgrades?',
+          type: 'select',
+          required: true,
+          options: ['None in past 5 years', 'Roof replacement', 'HVAC upgrade', 'Electrical upgrade', 'Plumbing upgrade', 'Kitchen renovation', 'Bathroom renovation', 'Other'],
+          acordField: 'property_maintenance',
+          description: 'Recent maintenance or upgrades to your property'
+        },
+        {
+          id: 'property-hazards',
+          question: 'Any additional hazards on your property?',
+          type: 'checkbox',
+          required: true,
+          options: ['None', 'Aggressive dog breeds', 'Trampoline', 'Swimming pool', 'Hot tub', 'Fireplace', 'Wood stove', 'Other'],
+          acordField: 'property_hazards',
+          description: 'Additional hazards or features on your property'
+        },
+        {
+          id: 'mortgagee-information',
+          question: 'Do you have a mortgage on this property?',
+          type: 'select',
+          required: true,
+          options: ['No mortgage', 'Yes, conventional mortgage', 'Yes, FHA mortgage', 'Yes, VA mortgage', 'Yes, other'],
+          acordField: 'mortgagee_information',
+          description: 'Mortgage information for the property'
+        },
+        {
+          id: 'mortgagee-name',
+          question: 'Mortgagee name (if applicable)',
+          type: 'text',
+          required: false,
+          placeholder: 'Bank or mortgage company name',
+          acordField: 'mortgagee_name',
+          description: 'Name of the mortgage company or bank'
+        },
+        {
+          id: 'billing-address-different',
+          question: 'Is your billing address different from property address?',
+          type: 'select',
+          required: true,
+          options: ['No, same address', 'Yes, different address'],
+          acordField: 'billing_address_different',
+          description: 'Whether billing address differs from property address'
+        },
+        {
+          id: 'billing-address',
+          question: 'Billing address (if different)',
+          type: 'text',
+          required: false,
+          placeholder: 'Street address, City, State, ZIP',
+          acordField: 'billing_address',
+          description: 'Address where bills should be sent'
+        },
+        {
+          id: 'homeowners-policy-term',
+          question: 'What policy term do you prefer?',
+          type: 'select',
+          required: true,
+          options: ['12 months', '24 months', '36 months'],
+          acordField: 'homeowners_policy_term',
+          description: 'Length of the homeowners insurance policy term'
+        },
+        {
+          id: 'homeowners-effective-date',
+          question: 'When would you like coverage to start?',
+          type: 'select',
+          required: true,
+          options: ['Immediately', 'Next week', 'Next month', 'Specific date'],
+          acordField: 'homeowners_effective_date',
+          description: 'When you want your homeowners insurance coverage to begin'
+        },
+        {
+          id: 'homeowners-payment-method',
+          question: 'How would you like to pay for your homeowners insurance?',
+          type: 'select',
+          required: true,
+          options: ['Monthly', 'Quarterly', 'Semi-annually', 'Annually'],
+          acordField: 'homeowners_payment_method',
+          description: 'Preferred payment frequency for your homeowners insurance'
         }
       ]
     },
@@ -726,6 +978,114 @@ class CoverageQuestionsService {
           options: ['Yes', 'No', 'Not Sure'],
           acordField: 'products_completed_operations',
           description: 'Coverage for products you make or work you complete'
+        },
+        {
+          id: 'business-start-date',
+          question: 'When did your business start?',
+          type: 'text',
+          required: true,
+          placeholder: 'MM/DD/YYYY',
+          acordField: 'business_start_date',
+          description: 'Date your business began operations'
+        },
+        {
+          id: 'business-ownership-structure',
+          question: 'What is your business ownership structure?',
+          type: 'select',
+          required: true,
+          options: ['Sole Proprietorship', 'Partnership', 'Corporation', 'LLC', 'S-Corporation', 'Non-Profit', 'Other'],
+          acordField: 'business_ownership_structure',
+          description: 'Legal structure of your business'
+        },
+        {
+          id: 'business-licenses',
+          question: 'What licenses does your business have?',
+          type: 'checkbox',
+          required: true,
+          options: ['Business license', 'Professional license', 'Trade license', 'Health department permit', 'Fire department permit', 'Other', 'None required'],
+          acordField: 'business_licenses',
+          description: 'Required licenses and permits for your business'
+        },
+        {
+          id: 'business-certifications',
+          question: 'What certifications does your business have?',
+          type: 'checkbox',
+          required: true,
+          options: ['ISO certification', 'Industry certification', 'Safety certification', 'Quality certification', 'Environmental certification', 'Other', 'None'],
+          acordField: 'business_certifications',
+          description: 'Professional certifications held by your business'
+        },
+        {
+          id: 'prior-business-insurance',
+          question: 'Who was your previous business insurance carrier?',
+          type: 'text',
+          required: false,
+          placeholder: 'e.g., Travelers, Hartford, Liberty Mutual',
+          acordField: 'prior_business_insurance',
+          description: 'Previous business insurance company'
+        },
+        {
+          id: 'prior-business-claims',
+          question: 'Any business insurance claims in the past 5 years?',
+          type: 'select',
+          required: true,
+          options: ['None', '1 claim', '2 claims', '3+ claims'],
+          acordField: 'prior_business_claims',
+          description: 'Previous business insurance claims history'
+        },
+        {
+          id: 'subcontractor-usage',
+          question: 'Do you use subcontractors?',
+          type: 'select',
+          required: true,
+          options: ['No subcontractors', 'Occasionally', 'Regularly', 'Always'],
+          acordField: 'subcontractor_usage',
+          description: 'Frequency of subcontractor usage'
+        },
+        {
+          id: 'international-operations',
+          question: 'Do you have international operations?',
+          type: 'select',
+          required: true,
+          options: ['No international operations', 'Yes, occasional', 'Yes, regular', 'Yes, extensive'],
+          acordField: 'international_operations',
+          description: 'International business operations'
+        },
+        {
+          id: 'contractual-liability',
+          question: 'Do you have contractual liability agreements?',
+          type: 'select',
+          required: true,
+          options: ['No contractual agreements', 'Yes, indemnification agreements', 'Yes, hold harmless agreements', 'Yes, other'],
+          acordField: 'contractual_liability',
+          description: 'Contractual liability and indemnification agreements'
+        },
+        {
+          id: 'general-liability-policy-term',
+          question: 'What policy term do you prefer?',
+          type: 'select',
+          required: true,
+          options: ['12 months', '24 months', '36 months'],
+          acordField: 'general_liability_policy_term',
+          description: 'Length of the general liability policy term'
+        },
+        {
+          id: 'general-liability-effective-date',
+          question: 'When would you like coverage to start?',
+          type: 'select',
+          required: true,
+          options: ['Immediately', 'Next week', 'Next month', 'Specific date'],
+          acordField: 'general_liability_effective_date',
+          description: 'When you want your general liability coverage to begin'
+        },
+        {
+          id: 'general-liability-payment-method',
+          question: 'How would you like to pay for your general liability insurance?',
+          type: 'select',
+          required: true,
+          options: ['Monthly', 'Quarterly', 'Semi-annually', 'Annually'],
+          acordField: 'general_liability_payment_method',
+          description: 'Preferred payment frequency for your general liability insurance'
         },
       ]
     },
