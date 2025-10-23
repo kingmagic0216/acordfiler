@@ -137,6 +137,69 @@ class CoverageQuestionsService {
           options: ['None', '1-2 violations', '3+ violations', 'At-fault accident', 'Not-at-fault accident'],
           acordField: 'driving_record',
           description: 'Include any tickets, citations, or accidents'
+        },
+        {
+          id: 'previous-carrier',
+          question: 'Who is your current auto insurance carrier?',
+          type: 'text',
+          required: false,
+          placeholder: 'e.g., State Farm, GEICO, Allstate',
+          acordField: 'previous_carrier',
+          description: 'Current or most recent auto insurance company'
+        },
+        {
+          id: 'current-policy-number',
+          question: 'Current policy number (if applicable)',
+          type: 'text',
+          required: false,
+          placeholder: 'Policy number',
+          acordField: 'current_policy_number',
+          description: 'Your current auto insurance policy number'
+        },
+        {
+          id: 'garaging-address',
+          question: 'Where is your vehicle garaged/parked?',
+          type: 'text',
+          required: true,
+          placeholder: 'Street address where vehicle is parked',
+          acordField: 'garaging_address',
+          description: 'Primary location where your vehicle is parked overnight'
+        },
+        {
+          id: 'vehicle-usage',
+          question: 'How do you primarily use your vehicle?',
+          type: 'select',
+          required: true,
+          options: ['Pleasure only', 'Commuting to work', 'Business use', 'Farm use', 'Other'],
+          acordField: 'vehicle_usage',
+          description: 'Primary purpose for using your vehicle'
+        },
+        {
+          id: 'desired-liability-limits',
+          question: 'What liability coverage limits do you want?',
+          type: 'select',
+          required: true,
+          options: ['State minimum', '$25,000/$50,000', '$50,000/$100,000', '$100,000/$300,000', '$250,000/$500,000', '$500,000/$1,000,000'],
+          acordField: 'liability_limits',
+          description: 'Bodily injury and property damage liability limits'
+        },
+        {
+          id: 'collision-comprehensive',
+          question: 'Do you want collision and comprehensive coverage?',
+          type: 'select',
+          required: true,
+          options: ['Yes, both', 'Collision only', 'Comprehensive only', 'No, liability only'],
+          acordField: 'physical_damage_coverage',
+          description: 'Coverage for damage to your own vehicle'
+        },
+        {
+          id: 'deductible-preference',
+          question: 'What deductible amount do you prefer?',
+          type: 'select',
+          required: true,
+          options: ['$250', '$500', '$1,000', '$2,500', '$5,000'],
+          acordField: 'deductible_amount',
+          description: 'Amount you pay out-of-pocket before insurance covers damage'
         }
       ]
     },
@@ -365,6 +428,123 @@ class CoverageQuestionsService {
           options: ['Single Family', 'Condo', 'Townhouse', 'Mobile Home', 'Duplex'],
           acordField: 'home_type',
           description: 'Primary structure type'
+        },
+        {
+          id: 'construction-type',
+          question: 'What is the construction type of your home?',
+          type: 'select',
+          required: true,
+          options: ['Frame', 'Brick', 'Masonry', 'Steel', 'Concrete', 'Other'],
+          acordField: 'construction_type',
+          description: 'Primary building material used in construction'
+        },
+        {
+          id: 'square-footage',
+          question: 'What is the square footage of your home?',
+          type: 'number',
+          required: true,
+          validation: { min: 500, max: 50000 },
+          acordField: 'square_footage',
+          description: 'Total living area in square feet'
+        },
+        {
+          id: 'number-stories',
+          question: 'How many stories is your home?',
+          type: 'select',
+          required: true,
+          options: ['1 story', '2 stories', '3+ stories', 'Split level'],
+          acordField: 'number_stories',
+          description: 'Number of floors in your home'
+        },
+        {
+          id: 'roof-type',
+          question: 'What type of roof does your home have?',
+          type: 'select',
+          required: true,
+          options: ['Asphalt shingles', 'Metal', 'Tile', 'Slate', 'Wood shingles', 'Flat', 'Other'],
+          acordField: 'roof_type',
+          description: 'Primary roofing material'
+        },
+        {
+          id: 'roof-age',
+          question: 'How old is your roof?',
+          type: 'select',
+          required: true,
+          options: ['Less than 5 years', '5-10 years', '10-15 years', '15-20 years', '20+ years', 'Unknown'],
+          acordField: 'roof_age',
+          description: 'Age of your current roof'
+        },
+        {
+          id: 'heating-system',
+          question: 'What type of heating system do you have?',
+          type: 'select',
+          required: true,
+          options: ['Forced air', 'Radiant heat', 'Heat pump', 'Baseboard', 'Wood stove', 'Other'],
+          acordField: 'heating_system',
+          description: 'Primary heating system type'
+        },
+        {
+          id: 'security-system',
+          question: 'Do you have a security system?',
+          type: 'select',
+          required: true,
+          options: ['Yes, monitored', 'Yes, unmonitored', 'No'],
+          acordField: 'security_system',
+          description: 'Home security and alarm system'
+        },
+        {
+          id: 'smoke-detectors',
+          question: 'What type of smoke detectors do you have?',
+          type: 'select',
+          required: true,
+          options: ['Hardwired', 'Battery operated', 'Both', 'None'],
+          acordField: 'smoke_detectors',
+          description: 'Smoke detection system type'
+        },
+        {
+          id: 'swimming-pool',
+          question: 'Do you have a swimming pool?',
+          type: 'select',
+          required: true,
+          options: ['No', 'Yes, in-ground', 'Yes, above-ground', 'Yes, hot tub/spa'],
+          acordField: 'swimming_pool',
+          description: 'Swimming pool or hot tub on property'
+        },
+        {
+          id: 'trampoline',
+          question: 'Do you have a trampoline?',
+          type: 'select',
+          required: true,
+          options: ['No', 'Yes'],
+          acordField: 'trampoline',
+          description: 'Trampoline on property'
+        },
+        {
+          id: 'dog-ownership',
+          question: 'Do you own any dogs?',
+          type: 'select',
+          required: true,
+          options: ['No', 'Yes, no bite history', 'Yes, with bite history'],
+          acordField: 'dog_ownership',
+          description: 'Dog ownership and bite history'
+        },
+        {
+          id: 'previous-homeowner-carrier',
+          question: 'Who is your current homeowners insurance carrier?',
+          type: 'text',
+          required: false,
+          placeholder: 'e.g., State Farm, Allstate, Farmers',
+          acordField: 'previous_homeowner_carrier',
+          description: 'Current or most recent homeowners insurance company'
+        },
+        {
+          id: 'previous-homeowner-claims',
+          question: 'Any homeowners insurance claims in the past 5 years?',
+          type: 'select',
+          required: true,
+          options: ['None', '1 claim', '2 claims', '3+ claims'],
+          acordField: 'previous_homeowner_claims',
+          description: 'Previous homeowners insurance claims history'
         }
       ]
     },
