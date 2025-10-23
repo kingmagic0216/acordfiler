@@ -465,7 +465,15 @@ const CustomerIntake = () => {
                         <div>
                           <h5 className="font-medium mb-3 text-blue-600">Personal Coverage Options</h5>
                           <div className="grid md:grid-cols-2 gap-3">
-                            {['Auto Insurance', 'Home Insurance', 'Personal Liability', 'Life Insurance', 'Health Insurance'].map((coverage) => (
+                            {['personal-auto', 'homeowners', 'personal-liability', 'life', 'health'].map((coverage) => {
+                              const displayNames = {
+                                'personal-auto': 'Auto Insurance',
+                                'homeowners': 'Home Insurance', 
+                                'personal-liability': 'Personal Liability',
+                                'life': 'Life Insurance',
+                                'health': 'Health Insurance'
+                              };
+                              return (
                               <div key={coverage} className="flex items-center space-x-2">
                                 <Checkbox
                                   id={coverage}
@@ -484,9 +492,10 @@ const CustomerIntake = () => {
                                     }
                                   }}
                                 />
-                                <Label htmlFor={coverage} className="text-sm">{coverage}</Label>
+                                <Label htmlFor={coverage} className="text-sm">{displayNames[coverage as keyof typeof displayNames]}</Label>
                               </div>
-                            ))}
+                              );
+                            })}
                           </div>
                         </div>
                       ) : null}
@@ -495,7 +504,16 @@ const CustomerIntake = () => {
                         <div>
                           <h5 className="font-medium mb-3 text-green-600">Business Coverage Options</h5>
                           <div className="grid md:grid-cols-2 gap-3">
-                            {['General Liability', 'Commercial Auto', 'Workers Compensation', 'Professional Liability', 'Property Insurance', 'Cyber Liability'].map((coverage) => (
+                            {['general-liability', 'commercial-auto', 'workers-compensation', 'professional-liability', 'property', 'cyber-liability'].map((coverage) => {
+                              const displayNames = {
+                                'general-liability': 'General Liability',
+                                'commercial-auto': 'Commercial Auto',
+                                'workers-compensation': 'Workers Compensation',
+                                'professional-liability': 'Professional Liability',
+                                'property': 'Property Insurance',
+                                'cyber-liability': 'Cyber Liability'
+                              };
+                              return (
                               <div key={coverage} className="flex items-center space-x-2">
                                 <Checkbox
                                   id={coverage}
@@ -514,9 +532,10 @@ const CustomerIntake = () => {
                                     }
                                   }}
                                 />
-                                <Label htmlFor={coverage} className="text-sm">{coverage}</Label>
+                                <Label htmlFor={coverage} className="text-sm">{displayNames[coverage as keyof typeof displayNames]}</Label>
                               </div>
-                            ))}
+                              );
+                            })}
                           </div>
                         </div>
                       ) : null}
