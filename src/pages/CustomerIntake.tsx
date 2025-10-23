@@ -58,7 +58,7 @@ const CustomerIntake = () => {
   const [coverageResponses, setCoverageResponses] = useState<Record<string, any>>({});
   const [currentUser, setCurrentUser] = useState<AuthUser | null>(null);
 
-  const totalSteps = 8;
+  const totalSteps = 7;
   const progress = (currentStep / totalSteps) * 100;
 
   // Auto-populate clientType based on insuranceType
@@ -81,20 +81,18 @@ const CustomerIntake = () => {
       case 1:
         return "Location";
       case 2:
-        return "Coverage Type";
+        return "Coverage Type & Options";
       case 3:
-        return "Coverage Types";
-      case 4:
         return "Coverage Questions";
-      case 5:
+      case 4:
         return "Coverage Details";
-      case 6:
+      case 5:
         if (formData.insuranceType === 'personal') return "Personal Information";
         if (formData.insuranceType === 'business') return "Business Information";
         return "Personal & Business Information";
-      case 7:
+      case 6:
         return "Contact Details";
-      case 8:
+      case 7:
         return "Review & Submit";
       default:
         return "Step";
@@ -106,20 +104,18 @@ const CustomerIntake = () => {
       case 1:
         return "Tell us where you're located";
       case 2:
-        return "What type of insurance are you looking for?";
+        return "What type of insurance and specific coverage do you need?";
       case 3:
-        return "Select the specific coverage types you need";
-      case 4:
         return "Answer coverage-specific questions";
-      case 5:
+      case 4:
         return "Provide additional coverage details";
-      case 6:
+      case 5:
         if (formData.insuranceType === 'personal') return "Tell us about yourself";
         if (formData.insuranceType === 'business') return "Tell us about your business";
         return "Tell us about yourself and your business";
-      case 7:
+      case 6:
         return "How can we reach you?";
-      case 8:
+      case 7:
         return "Confirm your information";
       default:
         return "";
@@ -134,7 +130,6 @@ const CustomerIntake = () => {
     { number: 5, title: getStepTitle(5), description: getStepDescription(5) },
     { number: 6, title: getStepTitle(6), description: getStepDescription(6) },
     { number: 7, title: getStepTitle(7), description: getStepDescription(7) },
-    { number: 8, title: getStepTitle(8), description: getStepDescription(8) },
   ];
 
   const getCoverageOptions = () => {
@@ -384,7 +379,7 @@ const CustomerIntake = () => {
         );
 
       case 2:
-        // Step 2: Coverage Type Selection
+        // Step 2: Coverage Type & Options (fused from old steps 2 & 3)
         return (
           <div className="space-y-6">
             <div>
@@ -393,146 +388,148 @@ const CustomerIntake = () => {
                 This helps us provide the right coverage options and questions for your needs.
               </p>
               
-              <div className="grid md:grid-cols-3 gap-4">
-                <Card 
-                  className={`p-6 cursor-pointer transition-all ${
-                    formData.insuranceType === 'personal' 
-                      ? 'ring-2 ring-insurance-blue bg-insurance-blue/5' 
-                      : 'hover:bg-muted/50'
-                  }`}
-                  onClick={() => setFormData(prev => ({ ...prev, insuranceType: 'personal' }))}
-                >
-                  <div className="text-center">
-                    <div className="h-12 w-12 rounded-lg bg-blue-100 flex items-center justify-center mx-auto mb-3">
-                      <UserIcon className="h-6 w-6 text-blue-600" />
+              {/* Insurance Type Selection */}
+              <div className="mb-8">
+                <div className="grid md:grid-cols-3 gap-4">
+                  <Card 
+                    className={`p-6 cursor-pointer transition-all ${
+                      formData.insuranceType === 'personal' 
+                        ? 'ring-2 ring-insurance-blue bg-insurance-blue/5' 
+                        : 'hover:bg-muted/50'
+                    }`}
+                    onClick={() => setFormData(prev => ({ ...prev, insuranceType: 'personal' }))}
+                  >
+                    <div className="text-center">
+                      <div className="h-12 w-12 rounded-lg bg-blue-100 flex items-center justify-center mx-auto mb-3">
+                        <UserIcon className="h-6 w-6 text-blue-600" />
+                      </div>
+                      <h4 className="font-semibold mb-2">Personal Insurance</h4>
+                      <p className="text-sm text-muted-foreground">
+                        Auto, Home, Personal Liability, and other personal coverage
+                      </p>
                     </div>
-                    <h4 className="font-semibold mb-2">Personal Insurance</h4>
-                    <p className="text-sm text-muted-foreground">
-                      Auto, Home, Personal Liability, and other personal coverage
-                    </p>
-                  </div>
-                </Card>
+                  </Card>
 
-                <Card 
-                  className={`p-6 cursor-pointer transition-all ${
-                    formData.insuranceType === 'business' 
-                      ? 'ring-2 ring-insurance-blue bg-insurance-blue/5' 
-                      : 'hover:bg-muted/50'
-                  }`}
-                  onClick={() => setFormData(prev => ({ ...prev, insuranceType: 'business' }))}
-                >
-                  <div className="text-center">
-                    <div className="h-12 w-12 rounded-lg bg-green-100 flex items-center justify-center mx-auto mb-3">
-                      <Building2 className="h-6 w-6 text-green-600" />
+                  <Card 
+                    className={`p-6 cursor-pointer transition-all ${
+                      formData.insuranceType === 'business' 
+                        ? 'ring-2 ring-insurance-blue bg-insurance-blue/5' 
+                        : 'hover:bg-muted/50'
+                    }`}
+                    onClick={() => setFormData(prev => ({ ...prev, insuranceType: 'business' }))}
+                  >
+                    <div className="text-center">
+                      <div className="h-12 w-12 rounded-lg bg-green-100 flex items-center justify-center mx-auto mb-3">
+                        <Building2 className="h-6 w-6 text-green-600" />
+                      </div>
+                      <h4 className="font-semibold mb-2">Business Insurance</h4>
+                      <p className="text-sm text-muted-foreground">
+                        General Liability, Commercial Auto, Workers Comp, and more
+                      </p>
                     </div>
-                    <h4 className="font-semibold mb-2">Business Insurance</h4>
-                    <p className="text-sm text-muted-foreground">
-                      General Liability, Commercial Auto, Workers Comp, and more
-                    </p>
-                  </div>
-                </Card>
+                  </Card>
 
-                <Card 
-                  className={`p-6 cursor-pointer transition-all ${
-                    formData.insuranceType === 'both' 
-                      ? 'ring-2 ring-insurance-blue bg-insurance-blue/5' 
-                      : 'hover:bg-muted/50'
-                  }`}
-                  onClick={() => setFormData(prev => ({ ...prev, insuranceType: 'both' }))}
-                >
-                  <div className="text-center">
-                    <div className="h-12 w-12 rounded-lg bg-purple-100 flex items-center justify-center mx-auto mb-3">
-                      <Shield className="h-6 w-6 text-purple-600" />
+                  <Card 
+                    className={`p-6 cursor-pointer transition-all ${
+                      formData.insuranceType === 'both' 
+                        ? 'ring-2 ring-insurance-blue bg-insurance-blue/5' 
+                        : 'hover:bg-muted/50'
+                    }`}
+                    onClick={() => setFormData(prev => ({ ...prev, insuranceType: 'both' }))}
+                  >
+                    <div className="text-center">
+                      <div className="h-12 w-12 rounded-lg bg-purple-100 flex items-center justify-center mx-auto mb-3">
+                        <Shield className="h-6 w-6 text-purple-600" />
+                      </div>
+                      <h4 className="font-semibold mb-2">Both Personal & Business</h4>
+                      <p className="text-sm text-muted-foreground">
+                        Comprehensive coverage for both personal and business needs
+                      </p>
                     </div>
-                    <h4 className="font-semibold mb-2">Both Personal & Business</h4>
-                    <p className="text-sm text-muted-foreground">
-                      Comprehensive coverage for both personal and business needs
-                    </p>
-                  </div>
-                </Card>
+                  </Card>
+                </div>
               </div>
+
+              {/* Specific Coverage Options - Only show if insurance type is selected */}
+              {formData.insuranceType && (
+                <div className="space-y-4">
+                  <Separator />
+                  <div>
+                    <h4 className="text-lg font-semibold mb-4">Select Specific Coverage Types</h4>
+                    <p className="text-gray-600 mb-6">
+                      Choose the specific types of coverage you need. We'll ask questions about each type you select.
+                    </p>
+                    
+                    <div className="space-y-4">
+                      {formData.insuranceType === 'personal' || formData.insuranceType === 'both' ? (
+                        <div>
+                          <h5 className="font-medium mb-3 text-blue-600">Personal Coverage Options</h5>
+                          <div className="grid md:grid-cols-2 gap-3">
+                            {['Auto Insurance', 'Home Insurance', 'Personal Liability', 'Life Insurance', 'Health Insurance'].map((coverage) => (
+                              <div key={coverage} className="flex items-center space-x-2">
+                                <Checkbox
+                                  id={coverage}
+                                  checked={formData.coverageTypes.includes(coverage)}
+                                  onCheckedChange={(checked) => {
+                                    if (checked) {
+                                      setFormData(prev => ({ 
+                                        ...prev, 
+                                        coverageTypes: [...prev.coverageTypes, coverage] 
+                                      }));
+                                    } else {
+                                      setFormData(prev => ({ 
+                                        ...prev, 
+                                        coverageTypes: prev.coverageTypes.filter(type => type !== coverage) 
+                                      }));
+                                    }
+                                  }}
+                                />
+                                <Label htmlFor={coverage} className="text-sm">{coverage}</Label>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      ) : null}
+                      
+                      {formData.insuranceType === 'business' || formData.insuranceType === 'both' ? (
+                        <div>
+                          <h5 className="font-medium mb-3 text-green-600">Business Coverage Options</h5>
+                          <div className="grid md:grid-cols-2 gap-3">
+                            {['General Liability', 'Commercial Auto', 'Workers Compensation', 'Professional Liability', 'Property Insurance', 'Cyber Liability'].map((coverage) => (
+                              <div key={coverage} className="flex items-center space-x-2">
+                                <Checkbox
+                                  id={coverage}
+                                  checked={formData.coverageTypes.includes(coverage)}
+                                  onCheckedChange={(checked) => {
+                                    if (checked) {
+                                      setFormData(prev => ({ 
+                                        ...prev, 
+                                        coverageTypes: [...prev.coverageTypes, coverage] 
+                                      }));
+                                    } else {
+                                      setFormData(prev => ({ 
+                                        ...prev, 
+                                        coverageTypes: prev.coverageTypes.filter(type => type !== coverage) 
+                                      }));
+                                    }
+                                  }}
+                                />
+                                <Label htmlFor={coverage} className="text-sm">{coverage}</Label>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      ) : null}
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         );
 
       case 3:
-        // Step 3: Coverage Types Selection
-        return (
-          <div className="space-y-6">
-            <div>
-              <h3 className="text-lg font-semibold mb-4">Select Coverage Types</h3>
-              <p className="text-gray-600 mb-6">
-                Based on your selection of {formData.insuranceType === 'personal' ? 'Personal' : formData.insuranceType === 'business' ? 'Business' : 'Personal & Business'} insurance, 
-                select the types of coverage you're looking for. We'll ask specific questions about each type you select.
-              </p>
-              
-              <div className="space-y-4">
-                {formData.insuranceType === 'personal' || formData.insuranceType === 'both' ? (
-                  <div>
-                    <h4 className="font-medium mb-3 text-blue-600">Personal Coverage Options</h4>
-                    <div className="grid md:grid-cols-2 gap-3">
-                      {['Auto Insurance', 'Home Insurance', 'Personal Liability', 'Life Insurance', 'Health Insurance'].map((coverage) => (
-                        <div key={coverage} className="flex items-center space-x-2">
-                          <Checkbox
-                            id={coverage}
-                            checked={formData.coverageTypes.includes(coverage)}
-                            onCheckedChange={(checked) => {
-                              if (checked) {
-                                setFormData(prev => ({ 
-                                  ...prev, 
-                                  coverageTypes: [...prev.coverageTypes, coverage] 
-                                }));
-                              } else {
-                                setFormData(prev => ({ 
-                                  ...prev, 
-                                  coverageTypes: prev.coverageTypes.filter(type => type !== coverage) 
-                                }));
-                              }
-                            }}
-                          />
-                          <Label htmlFor={coverage} className="text-sm">{coverage}</Label>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                ) : null}
-                
-                {formData.insuranceType === 'business' || formData.insuranceType === 'both' ? (
-                  <div>
-                    <h4 className="font-medium mb-3 text-green-600">Business Coverage Options</h4>
-                    <div className="grid md:grid-cols-2 gap-3">
-                      {['General Liability', 'Commercial Auto', 'Workers Compensation', 'Professional Liability', 'Property Insurance', 'Cyber Liability'].map((coverage) => (
-                        <div key={coverage} className="flex items-center space-x-2">
-                          <Checkbox
-                            id={coverage}
-                            checked={formData.coverageTypes.includes(coverage)}
-                            onCheckedChange={(checked) => {
-                              if (checked) {
-                                setFormData(prev => ({ 
-                                  ...prev, 
-                                  coverageTypes: [...prev.coverageTypes, coverage] 
-                                }));
-                              } else {
-                                setFormData(prev => ({ 
-                                  ...prev, 
-                                  coverageTypes: prev.coverageTypes.filter(type => type !== coverage) 
-                                }));
-                              }
-                            }}
-                          />
-                          <Label htmlFor={coverage} className="text-sm">{coverage}</Label>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                ) : null}
-              </div>
-            </div>
-          </div>
-        );
-
-      case 4:
-        // Step 4: Coverage Questions (moved from old case 3)
+        // Step 3: Coverage Questions (moved from old case 4)
         const selectedCoverageQuestions = coverageQuestionsService.getQuestionsForCoverages(
           formData.coverageTypes, 
           formData.clientType
@@ -684,8 +681,8 @@ const CustomerIntake = () => {
           </div>
         );
 
-      case 5:
-        // Step 5: Personal/Business Information (moved from old case 4)
+      case 4:
+        // Step 4: Coverage Details (moved from old case 5)
         if (formData.insuranceType === 'personal') {
           return (
             <div className="space-y-6">
@@ -993,8 +990,8 @@ const CustomerIntake = () => {
           );
         }
 
-      case 6:
-        // Step 6: Contact Details (moved from old case 5)
+      case 5:
+        // Step 5: Personal/Business Information (moved from old case 6)
         return (
           <div className="space-y-6">
             <div>
@@ -1089,7 +1086,7 @@ const CustomerIntake = () => {
         );
 
       case 7:
-        // Step 7: Review & Submit (moved from old case 6)
+        // Step 7: Review & Submit
         return (
           <div className="space-y-6">
             <div className="text-center mb-6">
