@@ -612,8 +612,7 @@ const CustomerIntake = () => {
                     
                     <div className="space-y-6">
                       {questions.map((question) => (
-                <Card key={question.id} className="p-4">
-                  <div className="space-y-3">
+                        <div key={question.id} className="space-y-2">
                     <div className="flex items-start space-x-2">
                       <Label htmlFor={question.id} className="text-sm font-medium">
                         {question.question}
@@ -706,9 +705,12 @@ const CustomerIntake = () => {
                         ))}
                       </div>
                     )}
-                  </div>
-                </Card>
-              ))}
+                        </div>
+                      ))}
+                    </div>
+                  </Card>
+                );
+              })}
             </div>
 
             <Card className="p-4 bg-green-50 border-green-200">
