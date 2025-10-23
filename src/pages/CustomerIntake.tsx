@@ -58,7 +58,7 @@ const CustomerIntake = () => {
   const [coverageResponses, setCoverageResponses] = useState<Record<string, any>>({});
   const [currentUser, setCurrentUser] = useState<AuthUser | null>(null);
 
-  const totalSteps = 7;
+  const totalSteps = 8;
   const progress = (currentStep / totalSteps) * 100;
 
   // Auto-populate clientType based on insuranceType
@@ -79,20 +79,22 @@ const CustomerIntake = () => {
   const getStepTitle = (stepNumber: number) => {
     switch (stepNumber) {
       case 1:
-        return "Location & Coverage Type";
+        return "Location";
       case 2:
-        return "Coverage Types";
+        return "Coverage Type";
       case 3:
-        return "Coverage Questions";
+        return "Coverage Types";
       case 4:
-        return "Coverage Details";
+        return "Coverage Questions";
       case 5:
+        return "Coverage Details";
+      case 6:
         if (formData.insuranceType === 'personal') return "Personal Information";
         if (formData.insuranceType === 'business') return "Business Information";
         return "Personal & Business Information";
-      case 6:
-        return "Contact Details";
       case 7:
+        return "Contact Details";
+      case 8:
         return "Review & Submit";
       default:
         return "Step";
@@ -102,20 +104,22 @@ const CustomerIntake = () => {
   const getStepDescription = (stepNumber: number) => {
     switch (stepNumber) {
       case 1:
-        return "Let's start with your location and what type of insurance you need";
+        return "Tell us where you're located";
       case 2:
-        return "Select the specific coverage types you need";
+        return "What type of insurance are you looking for?";
       case 3:
-        return "Answer coverage-specific questions";
+        return "Select the specific coverage types you need";
       case 4:
-        return "Provide additional coverage details";
+        return "Answer coverage-specific questions";
       case 5:
+        return "Provide additional coverage details";
+      case 6:
         if (formData.insuranceType === 'personal') return "Tell us about yourself";
         if (formData.insuranceType === 'business') return "Tell us about your business";
         return "Tell us about yourself and your business";
-      case 6:
-        return "How can we reach you?";
       case 7:
+        return "How can we reach you?";
+      case 8:
         return "Confirm your information";
       default:
         return "";
@@ -130,6 +134,7 @@ const CustomerIntake = () => {
     { number: 5, title: getStepTitle(5), description: getStepDescription(5) },
     { number: 6, title: getStepTitle(6), description: getStepDescription(6) },
     { number: 7, title: getStepTitle(7), description: getStepDescription(7) },
+    { number: 8, title: getStepTitle(8), description: getStepDescription(8) },
   ];
 
   const getCoverageOptions = () => {
@@ -333,13 +338,13 @@ const CustomerIntake = () => {
   const renderStepContent = () => {
     switch (currentStep) {
       case 1:
-        // Step 1: Location & Coverage Type (GEICO/Progressive/State Farm style)
+        // Step 1: Location only
         return (
           <div className="space-y-6">
             <div>
-              <h3 className="text-lg font-semibold mb-4">Let's get started!</h3>
+              <h3 className="text-lg font-semibold mb-4">Where are you located?</h3>
               <p className="text-gray-600 mb-6">
-                We'll help you find the right insurance coverage. Let's start with your location and what type of insurance you need.
+                We'll help you find the right insurance coverage. Let's start with your location to provide accurate rates for your area.
               </p>
               
               {/* ZIP Code Input */}
@@ -358,71 +363,6 @@ const CustomerIntake = () => {
                 <p className="text-xs text-gray-500 mt-1">
                   This helps us provide accurate rates for your area
                 </p>
-              </div>
-
-              {/* Insurance Type Selection */}
-              <div className="mb-6">
-                <Label className="text-sm font-medium mb-4 block">
-                  What type of insurance are you looking for? *
-                </Label>
-                <div className="grid md:grid-cols-3 gap-4">
-                  <Card 
-                    className={`p-6 cursor-pointer transition-all ${
-                      formData.insuranceType === 'personal' 
-                        ? 'ring-2 ring-insurance-blue bg-insurance-blue/5' 
-                        : 'hover:bg-muted/50'
-                    }`}
-                    onClick={() => setFormData(prev => ({ ...prev, insuranceType: 'personal' }))}
-                  >
-                    <div className="text-center">
-                      <div className="h-12 w-12 rounded-lg bg-blue-100 flex items-center justify-center mx-auto mb-3">
-                        <UserIcon className="h-6 w-6 text-blue-600" />
-                      </div>
-                      <h4 className="font-semibold mb-2">Personal Insurance</h4>
-                      <p className="text-sm text-muted-foreground">
-                        Auto, Home, Personal Liability, and other personal coverage
-                      </p>
-                    </div>
-                  </Card>
-
-                  <Card 
-                    className={`p-6 cursor-pointer transition-all ${
-                      formData.insuranceType === 'business' 
-                        ? 'ring-2 ring-insurance-blue bg-insurance-blue/5' 
-                        : 'hover:bg-muted/50'
-                    }`}
-                    onClick={() => setFormData(prev => ({ ...prev, insuranceType: 'business' }))}
-                  >
-                    <div className="text-center">
-                      <div className="h-12 w-12 rounded-lg bg-green-100 flex items-center justify-center mx-auto mb-3">
-                        <Building2 className="h-6 w-6 text-green-600" />
-                      </div>
-                      <h4 className="font-semibold mb-2">Business Insurance</h4>
-                      <p className="text-sm text-muted-foreground">
-                        General Liability, Commercial Auto, Workers Comp, and more
-                      </p>
-                    </div>
-                  </Card>
-
-                  <Card 
-                    className={`p-6 cursor-pointer transition-all ${
-                      formData.insuranceType === 'both' 
-                        ? 'ring-2 ring-insurance-blue bg-insurance-blue/5' 
-                        : 'hover:bg-muted/50'
-                    }`}
-                    onClick={() => setFormData(prev => ({ ...prev, insuranceType: 'both' }))}
-                  >
-                    <div className="text-center">
-                      <div className="h-12 w-12 rounded-lg bg-purple-100 flex items-center justify-center mx-auto mb-3">
-                        <Shield className="h-6 w-6 text-purple-600" />
-                      </div>
-                      <h4 className="font-semibold mb-2">Both Personal & Business</h4>
-                      <p className="text-sm text-muted-foreground">
-                        Comprehensive coverage for both personal and business needs
-                      </p>
-                    </div>
-                  </Card>
-                </div>
               </div>
 
               {/* Social Proof (Progressive style) */}
@@ -444,7 +384,79 @@ const CustomerIntake = () => {
         );
 
       case 2:
-        // Step 2: Coverage Types Selection
+        // Step 2: Coverage Type Selection
+        return (
+          <div className="space-y-6">
+            <div>
+              <h3 className="text-lg font-semibold mb-4">What type of insurance are you looking for?</h3>
+              <p className="text-gray-600 mb-6">
+                This helps us provide the right coverage options and questions for your needs.
+              </p>
+              
+              <div className="grid md:grid-cols-3 gap-4">
+                <Card 
+                  className={`p-6 cursor-pointer transition-all ${
+                    formData.insuranceType === 'personal' 
+                      ? 'ring-2 ring-insurance-blue bg-insurance-blue/5' 
+                      : 'hover:bg-muted/50'
+                  }`}
+                  onClick={() => setFormData(prev => ({ ...prev, insuranceType: 'personal' }))}
+                >
+                  <div className="text-center">
+                    <div className="h-12 w-12 rounded-lg bg-blue-100 flex items-center justify-center mx-auto mb-3">
+                      <UserIcon className="h-6 w-6 text-blue-600" />
+                    </div>
+                    <h4 className="font-semibold mb-2">Personal Insurance</h4>
+                    <p className="text-sm text-muted-foreground">
+                      Auto, Home, Personal Liability, and other personal coverage
+                    </p>
+                  </div>
+                </Card>
+
+                <Card 
+                  className={`p-6 cursor-pointer transition-all ${
+                    formData.insuranceType === 'business' 
+                      ? 'ring-2 ring-insurance-blue bg-insurance-blue/5' 
+                      : 'hover:bg-muted/50'
+                  }`}
+                  onClick={() => setFormData(prev => ({ ...prev, insuranceType: 'business' }))}
+                >
+                  <div className="text-center">
+                    <div className="h-12 w-12 rounded-lg bg-green-100 flex items-center justify-center mx-auto mb-3">
+                      <Building2 className="h-6 w-6 text-green-600" />
+                    </div>
+                    <h4 className="font-semibold mb-2">Business Insurance</h4>
+                    <p className="text-sm text-muted-foreground">
+                      General Liability, Commercial Auto, Workers Comp, and more
+                    </p>
+                  </div>
+                </Card>
+
+                <Card 
+                  className={`p-6 cursor-pointer transition-all ${
+                    formData.insuranceType === 'both' 
+                      ? 'ring-2 ring-insurance-blue bg-insurance-blue/5' 
+                      : 'hover:bg-muted/50'
+                  }`}
+                  onClick={() => setFormData(prev => ({ ...prev, insuranceType: 'both' }))}
+                >
+                  <div className="text-center">
+                    <div className="h-12 w-12 rounded-lg bg-purple-100 flex items-center justify-center mx-auto mb-3">
+                      <Shield className="h-6 w-6 text-purple-600" />
+                    </div>
+                    <h4 className="font-semibold mb-2">Both Personal & Business</h4>
+                    <p className="text-sm text-muted-foreground">
+                      Comprehensive coverage for both personal and business needs
+                    </p>
+                  </div>
+                </Card>
+              </div>
+            </div>
+          </div>
+        );
+
+      case 3:
+        // Step 3: Coverage Types Selection
         return (
           <div className="space-y-6">
             <div>
@@ -516,71 +528,6 @@ const CustomerIntake = () => {
                 ) : null}
               </div>
             </div>
-          </div>
-        );
-
-      case 3:
-        // Step 3: Coverage Needs Selection (moved from old case 2)
-        const coverageCategories = coverageQuestionsService.getCoverageTypesByCategory(formData.clientType);
-        
-        return (
-          <div className="space-y-6">
-            <div>
-              <h3 className="text-lg font-semibold mb-4">What coverage do you need?</h3>
-              <p className="text-gray-600 mb-6">
-                Select the types of insurance coverage you're looking for. We'll ask specific questions about each type you select.
-              </p>
-              
-              {Object.entries(coverageCategories).map(([category, coverages]) => (
-                <div key={category} className="mb-8">
-                  <h4 className="text-md font-semibold mb-4 text-gray-800">
-                    {coverageQuestionsService.getCategoryDisplayName(category)}
-                  </h4>
-                  <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {coverages.map((coverage) => (
-                      <Card 
-                        key={coverage.id}
-                        className={`p-4 cursor-pointer transition-all ${
-                          formData.coverageTypes.includes(coverage.id)
-                            ? 'ring-2 ring-insurance-blue bg-insurance-blue/5' 
-                            : 'hover:bg-muted/50'
-                        }`}
-                        onClick={() => handleCoverageChange(coverage.id, !formData.coverageTypes.includes(coverage.id))}
-                      >
-                        <div className="flex items-start space-x-3">
-                          <div className="text-2xl">{coverage.icon}</div>
-                          <div className="flex-1">
-                            <div className="flex items-center space-x-2 mb-1">
-                              <Checkbox 
-                                checked={formData.coverageTypes.includes(coverage.id)}
-                                onChange={() => {}} // Handled by Card onClick
-                              />
-                              <h5 className="font-medium text-sm">{coverage.name}</h5>
-                            </div>
-                            <p className="text-xs text-gray-600">{coverage.description}</p>
-                          </div>
-                        </div>
-                      </Card>
-                    ))}
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            <Card className="p-4 bg-blue-50 border-blue-200">
-              <div className="flex items-start space-x-3">
-                <div className="h-5 w-5 rounded-full bg-blue-100 flex items-center justify-center mt-0.5">
-                  <span className="text-blue-600 text-xs">ℹ</span>
-                </div>
-                <div>
-                  <h4 className="font-semibold text-blue-900 mb-1">Need Help Choosing?</h4>
-                  <p className="text-sm text-blue-700">
-                    Don't worry if you're not sure which coverage you need. You can always add or remove coverage types later, 
-                    and our system will guide you through the specific questions for each type you select.
-                  </p>
-                </div>
-              </div>
-            </Card>
           </div>
         );
 
